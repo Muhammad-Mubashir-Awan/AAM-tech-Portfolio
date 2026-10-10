@@ -38,7 +38,22 @@ const rememberSend = () => {
   }
 }
 
-const emptyForm = { name: '', email: '', phone: '', message: '', _gotcha: '' }
+// Pings the owner's WhatsApp so they know to check their email. Fire-and-forget: the reply isn't
+// needed, and a failure here must never make a message that was sent look like it failed.
+const notifyWhatsApp = (name) => {
+  if (!company.callmebotKey) return
+  try {
+    const text = `New enquiry from ${name.trim().slice(0, 40)} — check your email.`
+    const url =
+      `https://api.callmebot.com/whatsapp.php?phone=${company.whatsapp}` +
+      `&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(company.callmebotKey)}`
+    fetch(url, { mode: 'no-cors' }).catch(() => {})
+  } catch {
+    // Alert is a nice-to-have
+  }
+}
+
+const emptyForm ={ name: '', email: '', phone: '', message: '', _gotcha: '' }
 
 export default function Contact() {
   const [form, setForm] = useState(emptyForm)
@@ -109,6 +124,7 @@ export default function Contact() {
       })
       if (!res.ok) throw new Error(`Formspree responded ${res.status}`)
       rememberSend()
+      notifyWhatsApp(form.name)
       setForm(emptyForm)
       setStatus('sent')
       setLimited(recentSends().length >= LIMIT)

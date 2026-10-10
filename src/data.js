@@ -14,6 +14,9 @@ export const company = {
   formspreeId: 'mjygblwl',
   // Country code + number, digits only (no +, spaces or leading 0)
   whatsapp: '923192663398',
+  // CallMeBot API key: when set, each contact-form message also sends a short WhatsApp alert
+  // to the number above. Leave empty to switch the alert off. (Key is visible in the site code.)
+  callmebotKey: '',
   // Pre-filled WhatsApp greeting, picked by the page the visitor is on (client can edit it before sending)
   whatsappMessages: {
     home: "Hi AAM Technology! 👋 I found you through your website and I'd love to chat about a project I have in mind.",
