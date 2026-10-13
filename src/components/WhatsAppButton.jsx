@@ -3,7 +3,7 @@ import { whatsappAndroidLink, whatsappLink } from '../data.js'
 
 // Which greeting in data.js to use for the current page
 const pageFor = (pathname) =>
-  ['work', 'about', 'contact'].find((page) => pathname.startsWith(`/${page}`)) || 'home'
+  ['work', 'about'].find((page) => pathname.startsWith(`/${page}`)) || 'home'
 
 // The WhatsApp glyph, drawn in currentColor so it can be reused at any size
 export function WhatsAppIcon(props) {

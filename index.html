@@ -14,15 +14,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
     <title>AAM Technology — Websites & Digital Solutions</title>
-    <meta name="theme-color" content="#070b14" />
+    <meta name="theme-color" content="#f5f8fc" />
     <script>
       // Set the theme before first paint so there is no flash of the wrong one
       var light = false;
       try { light = window.matchMedia('(prefers-color-scheme: light)').matches; } catch (e) {}
       var c = null;
       try { c = localStorage.getItem('aam-theme-choice'); } catch (e) {}
-      // A saved Light or Dark pick wins; otherwise (new visitors, or "System") follow the device
-      document.documentElement.dataset.theme = c === 'light' || (c !== 'dark' && light) ? 'light' : 'dark';
+      // A saved Dark pick gives dark, "System" follows the device, and everyone else
+      // (new visitors included) gets the light day theme. Matches DEFAULT in useTheme.js.
+      document.documentElement.dataset.theme = c === 'dark' ? 'dark' : c === 'system' ? (light ? 'light' : 'dark') : 'light';
     </script>
   </head>
   <body>

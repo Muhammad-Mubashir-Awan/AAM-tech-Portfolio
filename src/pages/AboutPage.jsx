@@ -1,22 +1,16 @@
 import { Link } from 'react-router-dom'
-import { about, asset, company, team } from '../data.js'
+import { about, company } from '../data.js'
 import Reveal from '../components/Reveal.jsx'
-import SectionHeader from '../components/SectionHeader.jsx'
-import TiltCard from '../components/TiltCard.jsx'
-
-// "Jane Doe" -> "JD"
-const initials = (name) =>
-  name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+import Team from '../components/Team.jsx'
+import HoverField from '../components/HoverField.jsx'
+import { useProjectModal } from '../components/ProjectModal.jsx'
 
 export default function AboutPage() {
+  const openProjectForm = useProjectModal()
   return (
     <>
       <section className="hero page-head" id="top">
+        <HoverField />
         <div className="container hero__inner">
           <p className="eyebrow">About us</p>
           <h1 className="hero__title">
@@ -28,31 +22,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section" id="team">
-        <div className="container">
-          <SectionHeader
-            eyebrow="Our team"
-            title="Meet the team"
-            text="The people you'll work with, from the first call to launch day."
-          />
-          <div className="team__grid">
-            {team.map((m, i) => (
-              <Reveal key={`${m.name}-${i}`} index={i}>
-                <TiltCard className="card team__card">
-                  {m.photo ? (
-                    <img className="team__avatar team__avatar--photo" src={asset(m.photo)} alt={m.name} />
-                  ) : (
-                    <div className="team__avatar" aria-hidden="true">{initials(m.name)}</div>
-                  )}
-                  <h3>{m.name}</h3>
-                  {m.role && <p className="team__role">{m.role}</p>}
-                  {m.bio && <p>{m.bio}</p>}
-                </TiltCard>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Team />
 
       <section className="section" id="story">
         <div className="container about">
@@ -84,7 +54,7 @@ export default function AboutPage() {
           <Reveal className="about__closing">
             <h2>Let's build something together</h2>
             <div className="hero__actions">
-              <Link to="/contact" className="btn">Start your project</Link>
+              <button type="button" className="btn" onClick={openProjectForm}>Start your project</button>
               <Link to="/work" className="btn btn--ghost">See our work</Link>
             </div>
           </Reveal>

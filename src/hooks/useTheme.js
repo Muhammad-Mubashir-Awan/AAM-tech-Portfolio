@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
 
 // 'light' | 'dark' | 'system' — system follows the device setting.
-// New visitors follow the device setting; only a choice made with the switch is saved.
+// New visitors get the light (day) theme; only a choice made with the switch is saved.
+// Keep the default in step with the inline script in index.html.
 const KEY = 'aam-theme-choice'
+const DEFAULT = 'light'
 const query = typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: light)') : null
 
 export function readChoice() {
   try {
     const v = localStorage.getItem(KEY)
-    return v === 'light' || v === 'dark' || v === 'system' ? v : 'system'
+    return v === 'light' || v === 'dark' || v === 'system' ? v : DEFAULT
   } catch {
-    return 'system'
+    return DEFAULT
   }
 }
 

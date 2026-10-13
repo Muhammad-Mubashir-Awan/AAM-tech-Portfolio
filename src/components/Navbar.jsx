@@ -3,23 +3,24 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { asset, company } from '../data.js'
 import useTheme from '../hooks/useTheme.js'
 import ThemeToggle from './ThemeToggle.jsx'
+import { useProjectModal } from './ProjectModal.jsx'
 
 // Section links point at the home page, so they work from any page
 const links = [
   { to: '/#services', label: 'Services' },
-  { to: '/#process', label: 'Process' },
 ]
 
 // Links to their own pages, highlighted while you're on them
 const pages = [
   { to: '/about', label: 'About Us' },
-  { to: '/work', label: 'Work' },
+  { to: '/work', label: 'Our Work' },
 ]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [theme, setTheme] = useTheme()
+  const openProjectForm = useProjectModal()
 
   const { pathname, hash, key } = useLocation()
 
@@ -61,6 +62,9 @@ export default function Navbar() {
         </button>
 
         <nav className={`nav__links ${open ? 'is-open' : ''}`}>
+          <NavLink to="/" end className={({ isActive }) => (isActive ? 'is-active' : undefined)} onClick={() => setOpen(false)}>
+            Home
+          </NavLink>
           {links.map((l) => (
             <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>
               {l.label}
@@ -77,11 +81,18 @@ export default function Navbar() {
             </NavLink>
           ))}
           <ThemeToggle value={theme} onChange={setTheme} />
-          <NavLink to="/contact" className="btn btn--small nav__cta--menu" onClick={() => setOpen(false)}>
+          <button
+            type="button"
+            className="btn btn--small nav__cta--menu"
+            onClick={() => {
+              setOpen(false)
+              openProjectForm()
+            }}
+          >
             Contact Us
-          </NavLink>
+          </button>
         </nav>
-        <NavLink to="/contact" className="btn btn--small nav__cta--bar">Contact Us</NavLink>
+        <button type="button" className="btn btn--small nav__cta--bar" onClick={openProjectForm}>Contact Us</button>
       </div>
     </header>
   )

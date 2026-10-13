@@ -22,13 +22,10 @@ export const company = {
     home: "Hi AAM Technology! 👋 I found you through your website and I'd love to chat about a project I have in mind.",
     work: "Hi AAM Technology! 👋 I just saw your work on your website — I'd love something like that for my business. Can we talk?",
     about: "Hi AAM Technology! 👋 I was reading about your team on your website and I'd love to chat about a project.",
-    contact: "Hi AAM Technology! 👋 I'm on your website's contact page and I'd love to talk about a project. When's a good time?",
+    // Used by the WhatsApp links in the "Start a project" form
+    contact: "Hi AAM Technology! 👋 I'd love to talk about a project with you. When's a good time?",
   },
   location: 'Remote — working with clients worldwide',
-  // Office location for the map on the Contact page. The map stays hidden until address or mapEmbed is set.
-  address: '', // e.g. 'Street, City, Country' — shown on the page and used for the map if mapEmbed is empty
-  mapEmbed: '', // Google Maps → Share → "Embed a map" → the src="https://www.google.com/maps/embed?pb=…" link
-  mapLink: '', // Any Google Maps link to your place (e.g. https://maps.app.goo.gl/…) for the "Open in Google Maps" button
   // Paste each page's link between the quotes. Empty ones are hidden from the footer.
   socials: [
     { label: 'GitHub', href: '' },
@@ -56,6 +53,9 @@ export const stats = [
   { value: '24h', label: 'Response time' },
   { value: 'End-to-end', label: 'Design to launch' },
 ]
+
+// Selling points on the moving strip under the home hero (shown in capitals)
+export const marquee = ['Fast', 'Responsive', 'SEO-friendly', 'Custom-built', '24h replies', 'Working worldwide']
 
 export const services = [
   {
@@ -125,13 +125,6 @@ export const projects = [
     gradient: 'linear-gradient(135deg, #f7b733, #fc4a1a)',
     link: '',
   },
-]
-
-export const process = [
-  { step: '01', icon: '◎', title: 'Discover', text: 'We learn about your business, goals, audience, and what success looks like.' },
-  { step: '02', icon: '◧', title: 'Design', text: 'We create the layout and visual style, and refine it with your feedback.' },
-  { step: '03', icon: '⌘', title: 'Develop', text: 'We build a fast, responsive, accessible site with clean, maintainable code.' },
-  { step: '04', icon: '↗', title: 'Launch & Support', text: 'We deploy, test across devices, and stay on hand for updates and growth.' },
 ]
 
 // About page. TODO: rewrite the story and mission in your own words.
