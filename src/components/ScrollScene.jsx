@@ -7,9 +7,10 @@ import useScrollStage, { scrollState } from '../hooks/useScrollStage.js'
 import Ripple, { rippleEnabled } from './Ripple.jsx'
 import useLightTheme from '../hooks/useLightTheme.js'
 
-const ROYAL = '#0163ec'
-const BLUE = '#03c1fd'
-const STAR_LIGHT = '#1e3a8a'
+// Palette colours: navy in light mode, cream in dark mode
+const ROYAL = '#22396f'
+const BLUE = '#fcf1d0'
+const STAR_LIGHT = '#0d1c42' // renders lighter on screen, so one shade darker than wanted
 const CAMERA_Z = 7
 const FOV = 50
 
@@ -122,7 +123,7 @@ function WarpField({ count, layout }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial ref={material} color={light ? STAR_LIGHT : "#bcd7ff"} size={0.045} sizeAttenuation transparent opacity={0} depthWrite={false} />
+      <pointsMaterial ref={material} color={light ? STAR_LIGHT : "#fcf1d0"} size={0.045} sizeAttenuation transparent opacity={0} depthWrite={false} />
     </points>
   )
 }

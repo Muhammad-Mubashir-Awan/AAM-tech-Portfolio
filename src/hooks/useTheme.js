@@ -19,7 +19,7 @@ export function readChoice() {
 function applyTheme(choice) {
   const theme = choice === 'system' ? (query?.matches ? 'light' : 'dark') : choice
   document.documentElement.dataset.theme = theme
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f5f8fc' : '#070b14')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#fcf1d0' : '#010736')
 }
 
 export default function useTheme() {
