@@ -54,7 +54,7 @@ export default function AboutPage() {
           <Reveal className="about__closing">
             <h2>Let's build something together</h2>
             <div className="hero__actions">
-              <button type="button" className="btn" onClick={openProjectForm}>Start your project</button>
+              <button type="button" className="btn" onClick={openProjectForm}>Start your project <span className="btn__arrow" aria-hidden="true">→</span></button>
               <Link to="/work" className="btn btn--ghost">See our work</Link>
             </div>
           </Reveal>

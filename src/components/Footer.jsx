@@ -43,14 +43,14 @@ export default function Footer() {
       <div className="container">
         <div className="footer__top">
           <div>
-            <p className="footer__kicker">Building what comes next</p>
+            <p className="eyebrow">Building what comes next</p>
             <h2 className="footer__headline">
               Modern design. Clean code.
               <span>Websites that grow your business.</span>
             </h2>
           </div>
           <button type="button" className="btn footer__cta" onClick={openProjectForm}>
-            Start a project <span aria-hidden="true">→</span>
+            Start a project <span className="btn__arrow" aria-hidden="true">→</span>
           </button>
         </div>
 

@@ -18,7 +18,7 @@ export default function Work() {
             A selection of websites and apps we have designed and built for our clients.
           </p>
           <div className="hero__actions">
-            <button type="button" className="btn" onClick={openProjectForm}>Start your project</button>
+            <button type="button" className="btn" onClick={openProjectForm}>Start your project <span className="btn__arrow" aria-hidden="true">→</span></button>
             <Link to="/" className="btn btn--ghost">Back to home</Link>
           </div>
         </div>

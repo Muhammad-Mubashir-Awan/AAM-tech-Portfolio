@@ -26,7 +26,7 @@ export default function Hero() {
         </h1>
         <p className="hero__intro">{company.intro}</p>
         <div className="hero__actions">
-          <button type="button" className="btn" onClick={openProjectForm}>Start your project</button>
+          <button type="button" className="btn" onClick={openProjectForm}>Start your project <span className="btn__arrow" aria-hidden="true">→</span></button>
           <Link to="/work" className="btn btn--ghost">See our work</Link>
         </div>
 

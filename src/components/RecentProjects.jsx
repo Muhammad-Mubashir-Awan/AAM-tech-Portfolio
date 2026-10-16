@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { projects } from '../data.js'
 import Reveal from './Reveal.jsx'
+import TiltCard from './TiltCard.jsx'
 
 const isLive = (link) => /^https?:\/\//.test(link)
 
@@ -23,7 +24,7 @@ export default function RecentProjects() {
         <div className="recent__grid">
           {projects.slice(0, 3).map((p, i) => (
             <Reveal key={p.title} index={i}>
-              <article className="recent-card">
+              <TiltCard as="article" className="recent-card" max={6}>
                 <div className="project__thumb recent-card__thumb" style={{ background: p.gradient }}>
                   <span className="project__thumb-title">{p.title}</span>
                   <span className="recent-card__pill">{p.category}</span>
@@ -44,7 +45,7 @@ export default function RecentProjects() {
                     </Link>
                   )}
                 </div>
-              </article>
+              </TiltCard>
             </Reveal>
           ))}
         </div>
