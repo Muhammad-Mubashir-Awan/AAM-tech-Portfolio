@@ -597,37 +597,27 @@ main { overflow-x: clip; }
 
 /* Theme switch in the navbar */
 .theme-toggle {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 999px;
-  background: var(--surface-2);
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
   border: 1px solid var(--border);
-}
-.theme-toggle button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.4rem;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
+  border-radius: 50%;
+  background: var(--surface-2);
   color: var(--muted);
-  font: 500 0.8rem var(--font);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: color 0.2s, border-color 0.2s;
 }
-.theme-toggle button[aria-pressed="true"] {
-  background: linear-gradient(90deg, var(--primary), var(--primary-deep));
-  color: #fff;
-}
-.theme-toggle button:focus-visible { outline: 2px solid var(--primary-2); outline-offset: 2px; }
-.theme-toggle svg { width: 15px; height: 15px; flex: none; }
+.theme-toggle:hover { color: var(--primary-2); border-color: var(--primary); }
+.theme-toggle:focus-visible { outline: 2px solid var(--primary-2); outline-offset: 2px; }
+.theme-toggle svg { width: 17px; height: 17px; flex: none; }
 
 /* Light theme: nav text needs more contrast against the light bar */
+[data-theme="light"] .theme-toggle { color: #3c4a5e; }
+[data-theme="light"] .theme-toggle:hover { color: var(--primary); }
 [data-theme="light"] .nav__links a:not(.btn) { color: #3c4a5e; font-weight: 500; }
 [data-theme="light"] .nav__links a:not(.btn):hover { color: #0b1220; }
-[data-theme="light"] .theme-toggle button { color: #3c4a5e; }
-[data-theme="light"] .theme-toggle button[aria-pressed="true"] { color: #fff; }
 
 /* Current page link in the navbar */
 .nav__links a.is-active:not(.btn) { color: var(--text); }
