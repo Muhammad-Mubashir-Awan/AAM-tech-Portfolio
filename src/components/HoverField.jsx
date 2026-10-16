@@ -1,17 +1,26 @@
 import { useEffect, useRef } from 'react'
 import useLightTheme from '../hooks/useLightTheme.js'
 
-// Light mode's mouse effect: the hero is clean until the mouse comes onto it. Then a ring of
-// tiny colourful dots splashes open around the cursor, glides after it as it moves and
-// ripples gently, then melts away when the mouse leaves. (Dark mode keeps its own water ripple instead.)
+// Light mode's mouse effect: the hero is clean until the mouse comes onto it. Each tiny dot
+// has a little weight: the cursor gently pushes nearby dots aside, drags them along as it
+// moves so they flow and curl around it, and a soft spring floats them back home. Dots
+// light up only while they're near the cursor or still moving, so a quick move leaves a
+// short fading wake. (Dark mode keeps its own water ripple instead.)
 
 const enabled =
   typeof window !== 'undefined' &&
   window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-const SPACING = 18 // px between points
-const FOLLOW = 3 // how quickly the ring glides after the cursor (higher = snappier)
+const SPACING = 18 // px between dots
+// Feel of the motion
+const PUSH = 750 // how hard the cursor pushes dots outward (px/s²)
+const DRAG = 3 // how much the cursor's movement carries dots along with it
+const SWIRL = 140 // gentle curl around the cursor (px/s²)
+const SPRING = 30 // pull back to each dot's home spot
+const DAMP = 6 // friction, so dots glide and settle instead of bouncing
+const MAX_SHIFT = 40 // furthest a dot can be pushed from home (px)
+const SPEED_REF = 120 // a dot moving this fast (px/s) is fully lit
 
 // Antigravity's light palette: blue → red → yellow, giving purple and orange in between.
 // Blue→red takes most of the range and red→yellow the last fifth. Pre-blended into a few
@@ -27,11 +36,6 @@ const PALETTE = Array.from({ length: SHADES }, (_, i) => {
   return `rgb(${c.join(',')})`
 })
 
-const smoothstep = (a, b, x) => {
-  const t = Math.min(1, Math.max(0, (x - a) / (b - a)))
-  return t * t * (3 - 2 * t)
-}
-
 // Cheap smooth noise in -1..1 — a few overlapping sine waves
 const wave = (x, y, t) =>
   (Math.sin(x * 1.7 + t * 0.9) + Math.sin(y * 1.3 - t * 0.7) + Math.sin((x + y) * 0.9 + t * 0.5)) / 3
@@ -40,12 +44,9 @@ function buildPoints(width, height) {
   const points = []
   for (let y = SPACING / 2; y < height; y += SPACING) {
     for (let x = SPACING / 2; x < width; x += SPACING) {
-      points.push({
-        x: x + (Math.random() - 0.5) * SPACING * 0.7,
-        y: y + (Math.random() - 0.5) * SPACING * 0.7,
-        seed: Math.random() * 100,
-        size: 0,
-      })
+      const hx = x + (Math.random() - 0.5) * SPACING * 0.7
+      const hy = y + (Math.random() - 0.5) * SPACING * 0.7
+      points.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0, glow: 0, seed: Math.random() * 100 })
     }
   }
   return points
@@ -71,8 +72,8 @@ function Field() {
     let visible = true
     let last = performance.now()
 
-    const pointer = { x: 0, y: 0, inside: false }
-    const ring = { x: 0, y: 0, strength: 0 }
+    // Cursor position, its smoothed velocity, and how "present" it is (fades in/out)
+    const pointer = { x: 0, y: 0, vx: 0, vy: 0, inside: false, time: 0, strength: 0 }
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -89,14 +90,22 @@ function Field() {
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
       const inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
-      // Arriving fresh: open the ring at the cursor rather than sliding in from elsewhere
-      if (inside && !pointer.inside && ring.strength < 0.05) {
-        ring.x = x
-        ring.y = y
+      const now = performance.now()
+      if (inside && pointer.inside) {
+        // Smoothed cursor speed, so one jumpy event doesn't fling the dots
+        const dt = Math.max((now - pointer.time) / 1000, 0.008)
+        const cap = (v) => Math.max(-3000, Math.min(3000, v))
+        pointer.vx += (cap((x - pointer.x) / dt) - pointer.vx) * 0.35
+        pointer.vy += (cap((y - pointer.y) / dt) - pointer.vy) * 0.35
+      } else {
+        // Arriving fresh: start still, so nothing jumps
+        pointer.vx = 0
+        pointer.vy = 0
       }
       pointer.inside = inside
       pointer.x = x
       pointer.y = y
+      pointer.time = now
     }
 
     const draw = (now) => {
@@ -105,64 +114,88 @@ function Field() {
       last = now
       const t = now / 1000
 
-      // Mouse on the section opens the ring; off it, the ring melts away
-      ring.strength += ((pointer.inside ? 1 : 0) - ring.strength) * (1 - Math.exp(-dt * 4))
+      pointer.strength += ((pointer.inside ? 1 : 0) - pointer.strength) * (1 - Math.exp(-dt * 5))
+      // No pointer events while the mouse is still, so its speed eases off by itself
+      const ease = Math.exp(-dt * 8)
+      pointer.vx *= ease
+      pointer.vy *= ease
 
-      // Glides after the cursor, like a ripple dragged across water
-      if (pointer.inside) {
-        const follow = 1 - Math.exp(-dt * FOLLOW)
-        ring.x += (pointer.x - ring.x) * follow
-        ring.y += (pointer.y - ring.y) * follow
-      }
+      const reach = Math.min(220, Math.max(120, width * 0.14))
+      const friction = Math.exp(-DAMP * dt)
+      const glowUp = 1 - Math.exp(-dt * 10)
+      const glowDown = 1 - Math.exp(-dt * 2.5)
+      const active = pointer.strength > 0.01
 
-      // Opens out from a smaller ring like a splash, and breathes gently
-      const open = 1 - (1 - ring.strength) ** 3
-      const radius = Math.min(280, Math.max(140, width * 0.18)) *
-        (0.6 + 0.4 * open) * (1 + 0.05 * Math.sin(t * 1.1) + 0.03 * Math.cos(t * 2.6))
-      const half = radius * 0.45 // half the ring's thickness
-
-      const grow = 1 - Math.exp(-dt * 8)
-      // Two opacity tiers, so the smallest dots stay faint and never compete with the text
+      // Two opacity tiers, so the faintest dots never compete with the text
       const faint = Array.from({ length: SHADES }, () => new Path2D())
       const bold = Array.from({ length: SHADES }, () => new Path2D())
 
       for (const p of points) {
-        // A barely-there drift so the dots feel like a surface, not a grid
-        const x = p.x + wave(p.x * 0.004, p.y * 0.004 + p.seed * 0.01, t * 0.4) * 3
-        const y = p.y + wave(p.y * 0.004 + 7.3, p.x * 0.004, t * 0.4) * 3
-        const dx = x - ring.x
-        const dy = y - ring.y
+        const dx = p.x - pointer.x
+        const dy = p.y - pointer.y
         const dist = Math.hypot(dx, dy)
+        const near = active && dist < reach
 
-        let target = 0
-        if (ring.strength > 0.01) {
-          // A wide soft band, with ripples travelling outward through it and patchy noise
-          const band = smoothstep(radius - half, radius - half * 0.4, dist) *
-            (1 - smoothstep(radius + half * 0.3, radius + half, dist))
-          const ripple = 0.65 + 0.35 * Math.sin(dist * 0.06 - t * 2.5)
-          const patchy = 0.35 + 0.65 * smoothstep(-0.8, 0.8, wave(x * 0.02 + p.seed, y * 0.02, t * 0.6))
-          target = band * ripple * patchy * ring.strength * 1.2
+        // Resting dots far from the cursor need no work at all
+        if (!near && p.glow < 0.01 && Math.abs(p.vx) + Math.abs(p.vy) < 1) {
+          p.x = p.hx
+          p.y = p.hy
+          p.vx = p.vy = p.glow = 0
+          continue
         }
 
-        p.size += (target - p.size) * grow
+        let ax = (p.hx - p.x) * SPRING
+        let ay = (p.hy - p.y) * SPRING
+        let fall = 0
+        if (near) {
+          fall = (1 - dist / reach) ** 2 * pointer.strength
+          const nx = dist > 0.001 ? dx / dist : 0
+          const ny = dist > 0.001 ? dy / dist : 0
+          // Pushed outward, carried along with the cursor, and curled gently around it
+          ax += nx * PUSH * fall + pointer.vx * DRAG * fall - ny * SWIRL * fall
+          ay += ny * PUSH * fall + pointer.vy * DRAG * fall + nx * SWIRL * fall
+        }
 
-        if (p.size < 0.2) continue // nothing is drawn away from the cursor
+        p.vx = (p.vx + ax * dt) * friction
+        p.vy = (p.vy + ay * dt) * friction
+        p.x += p.vx * dt
+        p.y += p.vy * dt
 
-        // A tiny dot, stretched a hair outward from the ring centre (with a little wobble)
-        const angle = Math.atan2(dy, dx) + wave(x * 0.02, y * 0.02, t * 1.7) * 0.35
-        const len = 0.3 + Math.min(p.size, 1) * 1.1
+        // Never drift too far from home
+        const ox = p.x - p.hx
+        const oy = p.y - p.hy
+        const shift = Math.hypot(ox, oy)
+        if (shift > MAX_SHIFT) {
+          p.x = p.hx + (ox / shift) * MAX_SHIFT
+          p.y = p.hy + (oy / shift) * MAX_SHIFT
+          p.vx *= 0.5
+          p.vy *= 0.5
+        }
+
+        // Lit near the cursor and while still moving, so fast moves leave a fading wake
+        const speed = Math.hypot(p.vx, p.vy)
+        const target = Math.max(fall, Math.min(1, speed / SPEED_REF))
+        p.glow += (target - p.glow) * (target > p.glow ? glowUp : glowDown)
+        if (p.glow < 0.05) continue
+
+        // A barely-there drift while lit, so the dots feel alive rather than gridded
+        const x = p.x + wave(p.hx * 0.004, p.hy * 0.004 + p.seed * 0.01, t * 0.6) * 2 * p.glow
+        const y = p.y + wave(p.hy * 0.004 + 7.3, p.hx * 0.004, t * 0.6) * 2 * p.glow
+
+        // Each dash points the way it's moving (or away from the cursor when nearly still)
+        const angle = speed > 15 ? Math.atan2(p.vy, p.vx) : Math.atan2(dy, dx)
+        const len = 0.3 + Math.min(p.glow, 1) * 1.1
         const ux = Math.cos(angle) * len * 0.5
         const uy = Math.sin(angle) * len * 0.5
         // Colour drifts smoothly across the field in broad patches that slowly shift
-        const n = Math.min(1, Math.max(0, 0.5 + wave(x * 0.004, y * 0.004, t * 0.3) * 1.1))
+        const n = Math.min(1, Math.max(0, 0.5 + wave(p.hx * 0.004, p.hy * 0.004, t * 0.3) * 1.1))
         const shade = Math.round(n * (SHADES - 1))
-        const path = (p.size < 0.5 ? faint : bold)[shade]
+        const path = (p.glow < 0.5 ? faint : bold)[shade]
         path.moveTo(x - ux, y - uy)
         path.lineTo(x + ux, y + uy)
       }
 
       ctx.clearRect(0, 0, width, height)
-
       ctx.lineCap = 'round'
       ctx.lineWidth = 1.6
       for (const [paths, alpha] of [[faint, 0.5], [bold, 0.9]]) {
