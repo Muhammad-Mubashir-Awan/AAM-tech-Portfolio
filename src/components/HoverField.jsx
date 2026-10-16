@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
 import useLightTheme from '../hooks/useLightTheme.js'
 
-// Light mode's mouse effect: the hero is still water dusted with faint specks.
-// When the mouse comes onto it, a ring of tiny colourful dots splashes open around the
-// cursor, glides after it as it moves and ripples gently, then melts back into specks
-// when the mouse leaves. (Dark mode keeps its own water ripple instead.)
+// Light mode's mouse effect: the hero is clean until the mouse comes onto it. Then a ring of
+// tiny colourful dots splashes open around the cursor, glides after it as it moves and
+// ripples gently, then melts away when the mouse leaves. (Dark mode keeps its own water ripple instead.)
 
 const enabled =
   typeof window !== 'undefined' &&
@@ -12,8 +11,6 @@ const enabled =
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const SPACING = 18 // px between points
-const SPECK = '#475569' // resting dot colour
-const SPECK_ALPHA = 0.32
 const FOLLOW = 3 // how quickly the ring glides after the cursor (higher = snappier)
 
 // Antigravity's light palette: blue → red → yellow, giving purple and orange in between.
@@ -125,13 +122,12 @@ function Field() {
       const half = radius * 0.45 // half the ring's thickness
 
       const grow = 1 - Math.exp(-dt * 8)
-      const specks = new Path2D()
       // Two opacity tiers, so the smallest dots stay faint and never compete with the text
       const faint = Array.from({ length: SHADES }, () => new Path2D())
       const bold = Array.from({ length: SHADES }, () => new Path2D())
 
       for (const p of points) {
-        // A barely-there drift so the specks feel like a surface, not a grid
+        // A barely-there drift so the dots feel like a surface, not a grid
         const x = p.x + wave(p.x * 0.004, p.y * 0.004 + p.seed * 0.01, t * 0.4) * 3
         const y = p.y + wave(p.y * 0.004 + 7.3, p.x * 0.004, t * 0.4) * 3
         const dx = x - ring.x
@@ -150,10 +146,7 @@ function Field() {
 
         p.size += (target - p.size) * grow
 
-        if (p.size < 0.2) {
-          specks.rect(x - 0.7, y - 0.7, 1.4, 1.4)
-          continue
-        }
+        if (p.size < 0.2) continue // nothing is drawn away from the cursor
 
         // A tiny dot, stretched a hair outward from the ring centre (with a little wobble)
         const angle = Math.atan2(dy, dx) + wave(x * 0.02, y * 0.02, t * 1.7) * 0.35
@@ -169,9 +162,6 @@ function Field() {
       }
 
       ctx.clearRect(0, 0, width, height)
-      ctx.globalAlpha = SPECK_ALPHA
-      ctx.fillStyle = SPECK
-      ctx.fill(specks)
 
       ctx.lineCap = 'round'
       ctx.lineWidth = 1.6
