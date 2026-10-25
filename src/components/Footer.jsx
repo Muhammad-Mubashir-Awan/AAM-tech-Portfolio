@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { asset, company, services, whatsappLink } from '../data.js'
 import { useProjectModal } from './ProjectModal.jsx'
+import { Button } from '@/components/ui/button'
 
 // Small line icons for the round buttons under the logo
 const ICONS = {
@@ -38,89 +39,101 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' })
   }
 
+  const mono = "[font-family:ui-monospace,'SFMono-Regular',Consolas,monospace]"
+  const colTitle = `${mono} mb-[1.1rem] text-[0.72rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase`
+  const colLink = 'cursor-pointer border-0 bg-transparent p-0 text-left text-foreground opacity-85 transition-[color,opacity] [overflow-wrap:anywhere] hover:text-pine-600 hover:opacity-100'
+  const icon = 'fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] stroke-[1.7]'
+
   return (
-    <footer className="footer">
-      <div className="container">
-        <div className="footer__top">
+    // Extra bottom space keeps the footer links clear of the floating WhatsApp button
+    <footer className="relative z-[1] border-t border-border bg-background/60 pt-18 pb-8 text-[0.92rem]">
+      <div className="wrap">
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-6 pb-12">
           <div>
-            <p className="eyebrow">Building what comes next</p>
-            <h2 className="footer__headline">
+            <p className="eyebrow mb-[0.9rem]">Building what comes next</p>
+            <h2 className="m-0 text-[clamp(1.8rem,4vw,2.9rem)] leading-[1.12]">
               Modern design. Clean code.
-              <span>Websites that grow your business.</span>
+              <span className="text-gradient block">Websites that grow your business.</span>
             </h2>
           </div>
-          <button type="button" className="btn footer__cta" onClick={openProjectForm}>
-            Start a project <span className="btn__arrow" aria-hidden="true">→</span>
-          </button>
+          <Button onClick={openProjectForm} className="text-[0.85rem] tracking-[0.04em] uppercase">
+            Start a project <span data-arrow aria-hidden="true">→</span>
+          </Button>
         </div>
 
-        <div className="footer__grid">
-          <div className="footer__brand">
-            <Link to="/" className="nav__logo" aria-label={company.name}>
-              <img className="nav__mark nav__mark--dark" src={asset('logo-mark-dark.png')} alt="" />
-              <img className="nav__mark nav__mark--light" src={asset('logo-mark-light.png')} alt="" />
-              <span className="nav__word">Technology</span>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border py-12 sm:grid-cols-3 lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:gap-10">
+          <div className="col-span-full lg:col-span-1">
+            <Link to="/" aria-label={company.name} className="flex items-center gap-2.5">
+              <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} alt="" />
+              <span className="text-[0.85rem] font-semibold tracking-[0.32em] uppercase">Technology</span>
             </Link>
-            <p>
+            <p className="mt-[1.1rem] mb-[1.4rem] max-w-90 leading-relaxed">
               {company.name} designs and builds fast, modern websites and web apps that help
               businesses, startups and organizations grow online.
             </p>
-            <ul className="footer__icons">
+            <ul className="flex flex-wrap gap-2.5">
               {buttons.map((b) => (
                 <li key={b.label}>
                   <a
                     href={b.href}
                     aria-label={b.label}
                     title={b.label}
+                    className="grid size-[38px] place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-pine-600"
                     {...(b.label === 'Email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                   >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">{ICONS[b.label]}</svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" className={`size-[17px] ${icon}`}>{ICONS[b.label]}</svg>
                   </a>
                 </li>
               ))}
             </ul>
-            <p className="footer__private">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4" /></svg>
+            <p className={`${mono} mt-5 mb-0 flex items-center gap-[0.45rem] text-[0.75rem]`}>
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={`size-[15px] flex-none text-emerald-500 ${icon}`}>
+                <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4" />
+              </svg>
               Your details stay private.
             </p>
           </div>
 
-          <nav className="footer__col" aria-label="Services">
-            <h3>Services</h3>
-            <ul>
+          <nav aria-label="Services">
+            <h3 className={colTitle}>Services</h3>
+            <ul className="grid gap-[0.7rem]">
               {services.map((s) => (
-                <li key={s.title}><Link to="/#services">{s.title}</Link></li>
+                <li key={s.title}><Link to="/#services" className={colLink}>{s.title}</Link></li>
               ))}
             </ul>
           </nav>
 
-          <nav className="footer__col" aria-label="Company">
-            <h3>Company</h3>
-            <ul>
+          <nav aria-label="Company">
+            <h3 className={colTitle}>Company</h3>
+            <ul className="grid gap-[0.7rem]">
               {companyLinks.map((l) => (
-                <li key={l.label}><Link to={l.to}>{l.label}</Link></li>
+                <li key={l.label}><Link to={l.to} className={colLink}>{l.label}</Link></li>
               ))}
             </ul>
           </nav>
 
-          <div className="footer__col">
-            <h3>Get in touch</h3>
-            <ul>
-              <li><button type="button" onClick={openProjectForm}>Start a project</button></li>
-              <li><a href={`mailto:${company.email}`}>{company.email}</a></li>
-              <li><a href={whatsappLink('home')} target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
-              <li className="footer__muted">{company.location}</li>
+          <div className="col-span-full sm:col-span-1">
+            <h3 className={colTitle}>Get in touch</h3>
+            <ul className="grid gap-[0.7rem]">
+              <li><button type="button" onClick={openProjectForm} className={colLink}>Start a project</button></li>
+              <li><a href={`mailto:${company.email}`} className={colLink}>{company.email}</a></li>
+              <li><a href={whatsappLink('home')} target="_blank" rel="noopener noreferrer" className={colLink}>WhatsApp us</a></li>
+              <li className="text-muted-foreground">{company.location}</li>
             </ul>
           </div>
         </div>
 
-        <div className="footer__bottom">
-          <p>
+        <div className={`${mono} flex flex-wrap items-center justify-between gap-4 border-t border-border pt-[1.6rem] pb-18 text-[0.75rem] text-muted-foreground`}>
+          <p className="m-0">
             © {new Date().getFullYear()} {company.name}. All rights reserved.
-            <span className="footer__tagline"> · {company.tagline}</span>
+            <span className="opacity-75"> · {company.tagline}</span>
           </p>
-          <button type="button" className="footer__top-btn" onClick={backToTop}>
-            Back to top <span aria-hidden="true">↑</span>
+          <button
+            type="button"
+            onClick={backToTop}
+            className="group/top inline-flex cursor-pointer gap-1.5 rounded-full border border-border bg-transparent px-3.5 py-[0.45rem] text-foreground transition-colors hover:border-primary"
+          >
+            Back to top <span aria-hidden="true" className="transition-transform duration-200 group-hover/top:-translate-y-[3px] motion-reduce:transition-none">↑</span>
           </button>
         </div>
       </div>

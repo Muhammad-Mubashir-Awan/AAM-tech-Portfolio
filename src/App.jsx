@@ -44,12 +44,13 @@ export default function App() {
   return (
     <ProjectModalProvider>
       {/* Soft glow behind the top of the page */}
-      <div className="page-glow" aria-hidden="true">
-        <div className="hero__glow" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[600px] overflow-hidden">
+        <div className="absolute -top-[200px] left-1/2 h-[600px] w-[900px] -translate-x-1/2 bg-[radial-gradient(closest-side,rgba(250,255,251,0.95),transparent),radial-gradient(closest-side_at_70%_60%,rgba(35,83,71,0.08),transparent)]" />
       </div>
       <ScrollToTop />
       <Navbar />
-      <main>
+      {/* clip: decorative glows can't make the page scroll sideways */}
+      <main className="relative z-[1] overflow-x-clip">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />

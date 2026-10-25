@@ -2,30 +2,25 @@ import { Link } from 'react-router-dom'
 import { about, company } from '../data.js'
 import Reveal from '../components/Reveal.jsx'
 import Team from '../components/Team.jsx'
-import HoverField from '../components/HoverField.jsx'
+import PageHead from '../components/PageHead.jsx'
 import { useProjectModal } from '../components/ProjectModal.jsx'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 export default function AboutPage() {
   const openProjectForm = useProjectModal()
   return (
     <>
-      <section className="hero page-head" id="top">
-        <HoverField />
-        <div className="container hero__inner">
-          <p className="eyebrow">About us</p>
-          <h1 className="hero__title">
-            The people behind <span className="gradient-text">{company.name}</span>.
-          </h1>
-          <p className="hero__intro">
-            A small, focused team building websites and web apps that help businesses grow.
-          </p>
-        </div>
-      </section>
+      <PageHead
+        eyebrow="About us"
+        title={<>The people behind <span className="text-gradient">{company.name}</span>.</>}
+        intro="A small, focused team building websites and web apps that help businesses grow."
+      />
 
       <Team />
 
-      <section className="section" id="story">
-        <div className="container about">
+      <section className="py-18 md:py-25" id="story">
+        <div className="wrap grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <Reveal>
             <p className="eyebrow">Our story</p>
             <h2>Built for businesses that want more from the web</h2>
@@ -35,27 +30,31 @@ export default function AboutPage() {
           </Reveal>
 
           <Reveal index={1}>
-            <div className="card about__mission">
+            <Card className="gap-0 rounded-xl border-pine-800/10 bg-card/90 p-6 shadow-[0_10px_30px_rgba(11,43,38,0.08)] md:p-9">
               <p className="eyebrow">Our mission</p>
-              <p className="about__mission-text">{about.mission}</p>
-              <ul className="hero__stats about__highlights">
+              <p className="font-display text-[1.25rem] leading-normal font-semibold text-foreground">{about.mission}</p>
+              <ul className="mt-8 flex flex-wrap justify-start gap-6 border-t border-border pt-6 md:justify-between">
                 {about.highlights.map((h) => (
-                  <li key={h.label}>
-                    <strong>{h.value}</strong>
-                    <span>{h.label}</span>
+                  <li key={h.label} className="flex flex-col">
+                    <strong className="font-display text-[1.6rem] font-bold">{h.value}</strong>
+                    <span className="text-[0.9rem] text-muted-foreground">{h.label}</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </Card>
           </Reveal>
         </div>
 
-        <div className="container">
-          <Reveal className="about__closing">
+        <div className="wrap">
+          <Reveal className="mt-20 text-center">
             <h2>Let's build something together</h2>
-            <div className="hero__actions">
-              <button type="button" className="btn" onClick={openProjectForm}>Start your project <span className="btn__arrow" aria-hidden="true">→</span></button>
-              <Link to="/work" className="btn btn--ghost">See our work</Link>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button onClick={openProjectForm}>
+                Start your project <span data-arrow aria-hidden="true">→</span>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/work">See our work</Link>
+              </Button>
             </div>
           </Reveal>
         </div>

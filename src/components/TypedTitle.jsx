@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 // Types a headline in letter by letter, with a blinking cursor running just ahead of the
 // text that fades out when it's done. `parts` keeps styled runs intact, e.g.
-// [{ text: 'We build ' }, { text: 'digital experiences', className: 'gradient-text' }].
+// [{ text: 'We build ' }, { text: 'digital experiences', className: 'text-gradient' }].
 // Letters are switched on with `visibility`, so gradient text (background-clip: text)
 // still paints through them, and the line layout is reserved from the start.
 
@@ -57,8 +57,8 @@ export default function TypedTitle({ parts, duration = 900, delay = 250 }) {
   let index = 0
   return (
     <>
-      <span className="visually-hidden">{full}</span>
-      <span className="typed" ref={boxRef} aria-hidden="true">
+      <span className="sr-only">{full}</span>
+      <span className="relative block" ref={boxRef} aria-hidden="true">
         {parts.map((part, p) => (
           <span key={p} className={part.className}>
             {/* Words stay whole so a line never breaks mid-word */}
@@ -66,13 +66,13 @@ export default function TypedTitle({ parts, duration = 900, delay = 250 }) {
               /^\s+$/.test(word) ? (
                 [...word].map((ch) => {
                   const i = index++
-                  return <span key={`${w}-${i}`} ref={(el) => (charRefs.current[i] = el)} className={i < count ? undefined : 'typed__hidden'}>{ch}</span>
+                  return <span key={`${w}-${i}`} ref={(el) => (charRefs.current[i] = el)} className={i < count ? undefined : 'invisible'}>{ch}</span>
                 })
               ) : (
-                <span key={w} className="typed__word">
+                <span key={w} className="whitespace-nowrap">
                   {[...word].map((ch) => {
                     const i = index++
-                    return <span key={i} ref={(el) => (charRefs.current[i] = el)} className={i < count ? undefined : 'typed__hidden'}>{ch}</span>
+                    return <span key={i} ref={(el) => (charRefs.current[i] = el)} className={i < count ? undefined : 'invisible'}>{ch}</span>
                   })}
                 </span>
               ),
@@ -83,7 +83,9 @@ export default function TypedTitle({ parts, duration = 900, delay = 250 }) {
         {!reducedMotion && (
           <span
             ref={caretRef}
-            className={`typed__caret${done ? ' typed__caret--gone' : count > 0 && count < total ? '' : ' typed__caret--blink'}`}
+            className={`pointer-events-none absolute top-0 left-0 w-[3px] rounded-xs bg-primary transition-opacity duration-400${
+              done ? ' opacity-0' : count > 0 && count < total ? '' : ' animate-caret'
+            }`}
           />
         )}
       </span>

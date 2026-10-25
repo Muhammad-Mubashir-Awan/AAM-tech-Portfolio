@@ -4,24 +4,34 @@ import { marquee } from '../data.js'
 // holds two copies, so sliding it by half loops with no visible seam.
 const REPEATS = 4
 
-// A tilted band of selling points drifting left to right under the home hero.
+// A band of selling points drifting left to right under the home hero.
 export default function Marquee() {
   const copy = (key) => (
-    <ul key={key} className="marquee__list">
+    <ul key={key} className="m-0 flex flex-none list-none p-0">
       {Array.from({ length: REPEATS }, (_, r) =>
         marquee.map((text) => (
-          <li key={`${r}-${text}`} className="marquee__item">{text}</li>
+          <li
+            key={`${r}-${text}`}
+            className="flex items-center py-[0.95rem] font-display text-base font-bold tracking-[0.14em] whitespace-nowrap text-primary-foreground uppercase after:mx-[1.6rem] after:text-[0.8em] after:opacity-75 after:content-['✦']"
+          >
+            {text}
+          </li>
         )),
       )}
     </ul>
   )
 
   return (
-    <div className="marquee">
+    <div className="relative z-[1] overflow-hidden py-7">
       {/* Read once by screen readers; the moving copies are decoration */}
-      <p className="visually-hidden">{marquee.join(', ')}</p>
-      <div className="marquee__band" aria-hidden="true">
-        <div className="marquee__track">{[copy('a'), copy('b')]}</div>
+      <p className="sr-only">{marquee.join(', ')}</p>
+      <div
+        aria-hidden="true"
+        className="group/marquee overflow-hidden bg-linear-to-r from-primary to-pine-800 shadow-[0_14px_34px_-14px_rgba(5,31,32,0.45)]"
+      >
+        <div className="flex w-max animate-marquee group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
+          {[copy('a'), copy('b')]}
+        </div>
       </div>
     </div>
   )

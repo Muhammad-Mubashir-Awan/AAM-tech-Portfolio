@@ -269,5 +269,5 @@ function Field() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="hover-field" aria-hidden="true" />
+  return <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 z-0 size-full" aria-hidden="true" />
 }

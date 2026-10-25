@@ -32,9 +32,17 @@ export default function WhatsAppButton() {
   const { pathname } = useLocation()
 
   return (
-    <WhatsAppLink page={pageFor(pathname)} className="whatsapp-fab" aria-label="Chat with us on WhatsApp">
-      <WhatsAppIcon className="whatsapp-fab__icon" />
-      <span className="whatsapp-fab__label">Chat on WhatsApp</span>
+    <WhatsAppLink
+      page={pageFor(pathname)}
+      aria-label="Chat with us on WhatsApp"
+      // Above the page, below the navbar. A soft ring pulses three times after the page loads.
+      className="group/wa fixed right-4 bottom-4 z-40 grid size-13 place-items-center rounded-full bg-[#25d366] text-white shadow-[0_10px_25px_-8px_rgba(37,211,102,0.6),0_4px_12px_rgba(0,0,0,0.25)] transition-[transform,box-shadow] duration-200 before:pointer-events-none before:absolute before:inset-0 before:animate-ring before:rounded-full before:border-2 before:border-[#25d366] before:opacity-0 before:content-[''] hover:scale-108 hover:shadow-[0_14px_30px_-8px_rgba(37,211,102,0.7),0_6px_16px_rgba(0,0,0,0.25)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-pine-600 md:right-6 md:bottom-6 md:size-14 motion-reduce:transition-none motion-reduce:before:animate-none"
+    >
+      <WhatsAppIcon className="size-[30px]" />
+      {/* Hover label to the left of the button (computers only) */}
+      <span className="pointer-events-none absolute right-[calc(100%+12px)] hidden translate-x-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-[0.85rem] font-medium whitespace-nowrap text-foreground opacity-0 shadow-[0_6px_18px_rgba(20,23,42,0.12)] transition-[opacity,transform] duration-200 group-hover/wa:translate-x-0 group-hover/wa:opacity-100 group-focus-visible/wa:translate-x-0 group-focus-visible/wa:opacity-100 md:block">
+        Chat on WhatsApp
+      </span>
     </WhatsAppLink>
   )
 }

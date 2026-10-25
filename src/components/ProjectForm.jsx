@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react'
 import { company, services } from '../data.js'
 import { WhatsAppIcon, WhatsAppLink } from './WhatsAppButton.jsx'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 // Formspree's free plan allows 50 messages a month, so each browser may send
 // at most LIMIT messages per 24 hours. This lives in the visitor's browser, so it
@@ -52,7 +57,7 @@ const notifyWhatsApp = (name) => {
   }
 }
 
-const emptyForm = {
+export const emptyForm = {
   name: '',
   email: '',
   company: '',
@@ -68,8 +73,8 @@ const emptyForm = {
 // The "Start a project" form shown in the pop-up. `openedAt` is when the pop-up was last
 // opened, for the bot check: people take more than a few seconds, bots send instantly.
 // `prefill` holds answers already picked in the quick quote bar (service, budget, timeline).
-export default function ProjectForm({ openedAt, prefill }) {
-  const [form, setForm] = useState(emptyForm)
+// `form` / `setForm` live in the pop-up provider, so a half-written brief survives closing it.
+export default function ProjectForm({ openedAt, prefill, form, setForm }) {
   // Each time the pop-up opens with answers from the quick bar, copy them in. Done while
   // rendering (React's pattern for adjusting state when a prop changes), not in an effect.
   const [filledFor, setFilledFor] = useState(0)
@@ -174,61 +179,70 @@ export default function ProjectForm({ openedAt, prefill }) {
     }
   }
 
+  const setField = (name) => (value) => setForm((f) => ({ ...f, [name]: value }))
+  const req = <span className="text-red-500" aria-hidden="true">*</span>
+  const optional = <span className="font-normal text-muted-foreground">(optional)</span>
+  const field = 'grid gap-2 text-[0.9rem] font-medium'
+  const input = 'h-12 rounded-[10px] bg-background px-4 text-base md:text-[0.95rem]'
+  const status_ = 'rounded-[10px] border px-4 py-3 text-[0.9rem] [&_a]:underline'
+
   return (
-    <form className="form form--grid" onSubmit={submit}>
-      <label>
-        <span>Your name <span className="form__req" aria-hidden="true">*</span></span>
-        <input name="name" value={form.name} onChange={update} required maxLength={80} autoComplete="name" placeholder="Ali Khan" />
-      </label>
-      <label>
-        <span>Email <span className="form__req" aria-hidden="true">*</span></span>
-        <input type="email" name="email" value={form.email} onChange={update} required autoComplete="email" placeholder="you@company.com" />
-      </label>
+    <form className="grid gap-x-5 gap-y-[1.1rem] p-5 md:grid-cols-2 md:p-6" onSubmit={submit}>
+      <div className={field}>
+        <Label htmlFor="pf-name">Your name {req}</Label>
+        <Input id="pf-name" className={input} name="name" value={form.name} onChange={update} required maxLength={80} autoComplete="name" placeholder="Ali Khan" />
+      </div>
+      <div className={field}>
+        <Label htmlFor="pf-email">Email {req}</Label>
+        <Input id="pf-email" className={input} type="email" name="email" value={form.email} onChange={update} required autoComplete="email" placeholder="you@company.com" />
+      </div>
 
-      <label>
-        <span>Company / organisation <span className="form__hint">(optional)</span></span>
-        <input name="company" value={form.company} onChange={update} maxLength={100} autoComplete="organization" placeholder="Your business name" />
-      </label>
-      <label>
-        What do you need?
-        <select name="service" value={form.service} onChange={update}>
-          <option value="">Choose a service…</option>
-          {NEEDS.map((n) => <option key={n}>{n}</option>)}
-        </select>
-      </label>
+      <div className={field}>
+        <Label htmlFor="pf-company">Company / organisation {optional}</Label>
+        <Input id="pf-company" className={input} name="company" value={form.company} onChange={update} maxLength={100} autoComplete="organization" placeholder="Your business name" />
+      </div>
+      <div className={field}>
+        <Label htmlFor="pf-service">What do you need?</Label>
+        <Select name="service" value={form.service} onValueChange={setField('service')}>
+          <SelectTrigger id="pf-service"><SelectValue placeholder="Choose a service…" /></SelectTrigger>
+          <SelectContent>{NEEDS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
 
-      <label>
-        Budget
-        <select name="budget" value={form.budget} onChange={update}>
-          <option value="">Choose a range…</option>
-          {BUDGETS.map((b) => <option key={b}>{b}</option>)}
-        </select>
-      </label>
-      <label>
-        Timeline
-        <select name="timeline" value={form.timeline} onChange={update}>
-          <option value="">When do you need it?</option>
-          {TIMELINES.map((t) => <option key={t}>{t}</option>)}
-        </select>
-      </label>
+      <div className={field}>
+        <Label htmlFor="pf-budget">Budget</Label>
+        <Select name="budget" value={form.budget} onValueChange={setField('budget')}>
+          <SelectTrigger id="pf-budget"><SelectValue placeholder="Choose a range…" /></SelectTrigger>
+          <SelectContent>{BUDGETS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
+      <div className={field}>
+        <Label htmlFor="pf-timeline">Timeline</Label>
+        <Select name="timeline" value={form.timeline} onValueChange={setField('timeline')}>
+          <SelectTrigger id="pf-timeline"><SelectValue placeholder="When do you need it?" /></SelectTrigger>
+          <SelectContent>{TIMELINES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+        </Select>
+      </div>
 
-      <fieldset className="choice">
-        <legend>How should we reach you?</legend>
-        <div className="choice__options">
+      {/* "How should we reach you?" pill buttons (real radio inputs, so keyboards work) */}
+      <fieldset className="m-0 grid min-w-0 gap-2 border-0 p-0">
+        <legend className="mb-2 p-0 text-[0.9rem] font-medium">How should we reach you?</legend>
+        <div className="flex flex-wrap gap-2">
           {CONTACT_WAYS.map((way) => (
-            <label key={way} className="choice__option">
-              <input type="radio" name="contactVia" value={way} checked={form.contactVia === way} onChange={update} />
-              <span>{way}</span>
+            <label key={way} className="block">
+              <input type="radio" name="contactVia" value={way} checked={form.contactVia === way} onChange={update} className="peer sr-only" />
+              <span className="inline-block cursor-pointer rounded-full border border-border bg-background px-4 py-2.5 text-[0.88rem] transition-colors duration-200 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-pine-600 hover:border-primary">
+                {way}
+              </span>
             </label>
           ))}
         </div>
       </fieldset>
-      <label>
-        <span>
-          Phone / WhatsApp number{' '}
-          {needsPhone ? <span className="form__req" aria-hidden="true">*</span> : <span className="form__hint">(optional)</span>}
-        </span>
-        <input
+      <div className={field}>
+        <Label htmlFor="pf-phone">Phone / WhatsApp number {needsPhone ? req : optional}</Label>
+        <Input
+          id="pf-phone"
+          className={input}
           type="tel"
           name="phone"
           value={form.phone}
@@ -240,11 +254,13 @@ export default function ProjectForm({ openedAt, prefill }) {
           title="Numbers only, e.g. +92 300 1234567"
           placeholder="+92 300 1234567"
         />
-      </label>
+      </div>
 
-      <label className="form__wide">
-        <span>Project details <span className="form__req" aria-hidden="true">*</span></span>
-        <textarea
+      <div className={`${field} md:col-span-2`}>
+        <Label htmlFor="pf-message">Project details {req}</Label>
+        <Textarea
+          id="pf-message"
+          className="min-h-28 rounded-[10px] bg-background px-4 py-3 text-base md:text-[0.95rem]"
           name="message"
           rows="4"
           value={form.message}
@@ -255,10 +271,10 @@ export default function ProjectForm({ openedAt, prefill }) {
           placeholder={`What problem should the website solve, who is it for, and what must it include? (at least ${MIN_WORDS} words)`}
         />
         {/* Read out with the box via aria-describedby, not on every keystroke */}
-        <span id="message-count" className={`form__count${words >= MIN_WORDS ? ' form__count--ok' : ''}`} aria-hidden="true">
+        <span id="message-count" aria-hidden="true" className={`justify-self-end text-[0.8rem] font-normal ${words >= MIN_WORDS ? 'text-green-700' : 'text-muted-foreground'}`}>
           {words >= MIN_WORDS ? `${words} words ✓` : `${words} / ${MIN_WORDS} words`}
         </span>
-      </label>
+      </div>
 
       {/* Hidden from people; bots that fill it in are dropped by Formspree */}
       <input
@@ -269,17 +285,17 @@ export default function ProjectForm({ openedAt, prefill }) {
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
-        className="form__trap"
+        className="absolute -left-[9999px] size-px opacity-0"
       />
 
-      <div className="form__footer form__wide">
-        <p className="form__private"><span aria-hidden="true">🔒</span> Your details stay private.</p>
-        <button className="btn" type="submit" disabled={status === 'sending' || limited}>
+      <div className="flex flex-wrap items-center justify-between gap-4 md:col-span-2">
+        <p className="m-0 text-[0.82rem]"><span aria-hidden="true">🔒</span> Your details stay private.</p>
+        <Button type="submit" disabled={status === 'sending' || limited} className="max-md:w-full disabled:cursor-progress">
           {status === 'sending' ? 'Sending…' : 'Send project brief'}
-        </button>
+        </Button>
       </div>
 
-      <p className={`form__status form__status--${status} form__wide`} role="status" aria-live="polite">
+      <p role="status" aria-live="polite" className={`m-0 empty:hidden md:col-span-2 ${status === 'sent' ? `${status_} border-green-600/35 bg-green-500/10 text-green-700` : status === 'error' ? `${status_} border-red-500/35 bg-red-500/10 text-red-700` : ''}`}>
         {status === 'sent' && "Thanks! Your project brief has been sent — we'll reply within 24 hours."}
         {status === 'error' && (
           <>
@@ -289,17 +305,17 @@ export default function ProjectForm({ openedAt, prefill }) {
         )}
       </p>
       {limited && (
-        <p className="form__status form__status--limit form__wide">
+        <p className={`${status_} m-0 border-border bg-pine-600/10 text-pine-600 md:col-span-2`}>
           You've sent us {LIMIT} messages today. Thank you, we'll reply soon! For anything urgent, email{' '}
           <a href={`mailto:${company.email}`}>{company.email}</a> or{' '}
           <WhatsAppLink page="contact">message us on WhatsApp</WhatsAppLink>.
         </p>
       )}
 
-      <p className="form__direct form__wide">
+      <p className="m-0 text-center text-[0.85rem] md:col-span-2 [&_a]:text-pine-600">
         Prefer to reach us directly? <a href={`mailto:${company.email}`}>{company.email}</a>
         <span aria-hidden="true"> · </span>
-        <WhatsAppLink page="contact" className="form__whatsapp"><WhatsAppIcon /> WhatsApp</WhatsAppLink>
+        <WhatsAppLink page="contact" className="inline-flex items-center gap-1"><WhatsAppIcon className="size-4 text-[#25d366]" /> WhatsApp</WhatsAppLink>
       </p>
     </form>
   )

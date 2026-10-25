@@ -1,28 +1,25 @@
 import { Link } from 'react-router-dom'
 import Projects from '../components/Projects.jsx'
-import HoverField from '../components/HoverField.jsx'
+import PageHead from '../components/PageHead.jsx'
 import { useProjectModal } from '../components/ProjectModal.jsx'
+import { Button } from '@/components/ui/button'
 
 export default function Work() {
   const openProjectForm = useProjectModal()
   return (
     <>
-      <section className="hero page-head" id="top">
-        <HoverField />
-        <div className="container hero__inner">
-          <p className="eyebrow">Our portfolio</p>
-          <h1 className="hero__title">
-            Work that <span className="gradient-text">speaks for itself</span>.
-          </h1>
-          <p className="hero__intro">
-            A selection of websites and apps we have designed and built for our clients.
-          </p>
-          <div className="hero__actions">
-            <button type="button" className="btn" onClick={openProjectForm}>Start your project <span className="btn__arrow" aria-hidden="true">→</span></button>
-            <Link to="/" className="btn btn--ghost">Back to home</Link>
-          </div>
-        </div>
-      </section>
+      <PageHead
+        eyebrow="Our portfolio"
+        title={<>Work that <span className="text-gradient">speaks for itself</span>.</>}
+        intro="A selection of websites and apps we have designed and built for our clients."
+      >
+        <Button onClick={openProjectForm}>
+          Start your project <span data-arrow aria-hidden="true">→</span>
+        </Button>
+        <Button asChild variant="outline">
+          <Link to="/">Back to home</Link>
+        </Button>
+      </PageHead>
       <Projects />
     </>
   )

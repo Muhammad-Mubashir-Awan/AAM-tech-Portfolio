@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Design tokens for Tailwind and the shadcn components.
+   Palette: greens #051F20 · #0B2B26 · #163832 · #235347 · #8EB69B · #DAF1DE (pin.it/164cDxAy1),
+   with a lighter mint page background so text stays easy to read. Light theme only. */
+:root {
+  --radius: 1rem;
+  --background: #eef8f0;
+  --foreground: #051f20;
+  --card: #f8fdf9;
+  --card-foreground: #051f20;
+  --popover: #f8fdf9;
+  --popover-foreground: #051f20;
+  --primary: #163832;
+  --primary-foreground: #daf1de;
+  --secondary: #daf1de;
+  --secondary-foreground: #0b2b26;
+  --muted: #daf1de;
+  --muted-foreground: #2d5248;
+  --accent: #daf1de;
+  --accent-foreground: #0b2b26;
+  --destructive: #b91c1c;
+  --border: #c3dfca;
+  --input: #c3dfca;
+  --ring: #235347;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: calc(var(--radius) - 2px);
+  --radius-xl: var(--radius);
+}
+
+@theme {
+  /* The six palette greens, for when a specific shade is wanted */
+  --color-pine-900: #051f20;
+  --color-pine-800: #0b2b26;
+  --color-pine-700: #163832;
+  --color-pine-600: #235347;
+  --color-pine-500: #2e7a5c;
+  --color-pine-400: #4f9a78;
+  --color-pine-300: #8eb69b;
+  --color-pine-100: #daf1de;
+  --color-pine-50: #f8fdf9;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'DM Sans', 'Inter', system-ui, sans-serif;
+}
+
+@theme {
+  /* Animations used across the site */
+  --animate-marquee: marquee 70s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 7s ease-in-out infinite;
+  --animate-caret: caret 0.9s steps(1) infinite;
+  --animate-shimmer: shimmer 10s linear infinite;
+  --animate-ring: ring 2s ease-out 1.5s 3;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Sliding from -50% to 0 carries the strip left to right; its two copies make it seamless */
+  @keyframes marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+  @keyframes float { 50% { transform: translateY(-8px); } }
+  @keyframes caret { 50% { opacity: 0; } }
+  @keyframes shimmer { to { background-position: 300% 0; } }
+  @keyframes ring { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.6); opacity: 0; } }
+}
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { @apply bg-background text-foreground font-sans antialiased; line-height: 1.6; }
+  /* Typography modelled on caymarkauctions.com: DM Sans headlines, extra-bold Inter section titles */
+  h1, h2, h3 { @apply font-display; line-height: 1.15; margin: 0 0 0.6em; }
+  h1 { font-weight: 600; letter-spacing: -0.02em; }
+  h2 { @apply font-sans; font-weight: 800; letter-spacing: -0.02em; font-size: clamp(1.8rem, 3.5vw, 2.6rem); }
+  h3 { font-weight: 700; letter-spacing: -0.01em; font-size: 1.2rem; }
+  p { margin: 0 0 1em; @apply text-muted-foreground; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+}
+
+/* Page width used by every section */
+@utility wrap { width: min(1140px, 100% - 32px); margin-inline: auto; }
+
+/* Small uppercase section label with the green square marker */
+@utility eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-pine-600);
+  &::before { content: ''; flex: none; width: 8px; height: 8px; border-radius: 2px; background: var(--color-primary); }
+}
+
+/* Green gradient text; the animated one shimmers from deep green to bright mint */
+@utility text-gradient {
+  background: linear-gradient(90deg, var(--color-pine-700), var(--color-pine-400));
+  background-clip: text;
+  color: transparent;
+  text-shadow: none; /* a glow would show through the transparent letters */
+}
+@utility text-gradient-animated {
+  background: linear-gradient(90deg, #163832, #2e7a5c, #4f9a78, #2e7a5c, #163832) 0 0 / 300% 100%;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  animation: var(--animate-shimmer);
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+
+/* Soft light glow behind the hero headline and intro, so they read cleanly over the background */
+@utility text-glow { text-shadow: 0 0 2px rgba(248, 253, 249, 0.9), 0 2px 22px rgba(238, 248, 240, 0.95); }

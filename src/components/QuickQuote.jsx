@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { BUDGETS, NEEDS, TIMELINES } from './ProjectForm.jsx'
 import { useProjectModal } from './ProjectModal.jsx'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 const FIELDS = [
   { name: 'service', label: 'What do you need?', placeholder: 'Choose a service', options: NEEDS },
@@ -20,24 +24,32 @@ export default function QuickQuote() {
   }
 
   return (
-    <div className="container quick">
-      <form className="quick__bar" onSubmit={submit} aria-label="Get a free quote">
-        {FIELDS.map((f) => (
-          <label key={f.name} className="quick__field">
-            <span>{f.label}</span>
-            <select
-              name={f.name}
-              value={answers[f.name]}
-              onChange={(e) => setAnswers({ ...answers, [f.name]: e.target.value })}
-            >
-              <option value="">{f.placeholder}</option>
-              {f.options.map((o) => <option key={o}>{o}</option>)}
-            </select>
-          </label>
+    <div className="wrap relative z-[2] -mt-[72px] sm:-mt-[88px]">
+      <form
+        onSubmit={submit}
+        aria-label="Get a free quote"
+        className="grid grid-cols-2 items-end gap-3 rounded-xl border border-border bg-card p-4 shadow-[0_24px_50px_-24px_rgba(5,31,32,0.4)] sm:grid-cols-3 sm:gap-4 sm:p-5 lg:grid-cols-[repeat(3,1fr)_auto]"
+      >
+        {FIELDS.map((f, i) => (
+          <div key={f.name} className={cn('grid gap-1.5', i === 0 && 'col-span-2 sm:col-span-1')}>
+            <Label htmlFor={`quick-${f.name}`} className="text-[0.78rem] font-semibold text-muted-foreground">
+              {f.label}
+            </Label>
+            <Select value={answers[f.name]} onValueChange={(v) => setAnswers({ ...answers, [f.name]: v })}>
+              <SelectTrigger id={`quick-${f.name}`} className="max-sm:text-[0.9rem]">
+                <SelectValue placeholder={f.placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {f.options.map((o) => (
+                  <SelectItem key={o} value={o}>{o}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         ))}
-        <button type="submit" className="btn quick__submit">
-          Get a free quote <span className="btn__arrow" aria-hidden="true">→</span>
-        </button>
+        <Button type="submit" className="col-span-2 min-h-12 sm:col-span-3 lg:col-span-1">
+          Get a free quote <span data-arrow aria-hidden="true">→</span>
+        </Button>
       </form>
     </div>
   )
