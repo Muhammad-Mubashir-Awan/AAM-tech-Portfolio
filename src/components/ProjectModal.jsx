@@ -8,20 +8,27 @@ export const useProjectModal = () => useContext(OpenContext)
 
 export function ProjectModalProvider({ children }) {
   const [open, setOpen] = useState(false)
-  const openModal = useCallback(() => setOpen(true), [])
+  const [prefill, setPrefill] = useState(null)
+  // openModal({ service, budget, timeline }) pre-fills those answers. Buttons that pass
+  // openModal straight to onClick hand it a click event instead, which is ignored.
+  const openModal = useCallback((answers) => {
+    const isAnswers = answers && Object.getPrototypeOf(answers) === Object.prototype
+    setPrefill(isAnswers ? answers : null)
+    setOpen(true)
+  }, [])
   const close = useCallback(() => setOpen(false), [])
 
   return (
     <OpenContext.Provider value={openModal}>
       {children}
-      <ProjectModal open={open} onClose={close} />
+      <ProjectModal open={open} onClose={close} prefill={prefill} />
     </OpenContext.Provider>
   )
 }
 
 // The "Start a project" pop-up. A native <dialog> keeps keyboard focus inside it, closes on
 // Esc and puts the focus back on the button that opened it when it closes.
-function ProjectModal({ open, onClose }) {
+function ProjectModal({ open, onClose, prefill }) {
   const dialogRef = useRef(null)
   const [openedAt, setOpenedAt] = useState(0)
   const pressedOnBackdrop = useRef(false)
@@ -92,7 +99,7 @@ function ProjectModal({ open, onClose }) {
           </button>
         </header>
         {/* Always mounted, so a half-written brief survives closing the pop-up by accident */}
-        <div className="modal__body"><ProjectForm openedAt={openedAt} /></div>
+        <div className="modal__body"><ProjectForm openedAt={openedAt} prefill={prefill} /></div>
       </div>
     </dialog>
   )

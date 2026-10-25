@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { asset, company } from '../data.js'
-import useTheme from '../hooks/useTheme.js'
-import ThemeToggle from './ThemeToggle.jsx'
 import { useProjectModal } from './ProjectModal.jsx'
 
 // Section links point at the home page, so they work from any page
@@ -19,7 +17,6 @@ const pages = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [theme, setTheme] = useTheme()
   const openProjectForm = useProjectModal()
 
   const { pathname, hash, key } = useLocation()
@@ -80,7 +77,6 @@ export default function Navbar() {
               {p.label}
             </NavLink>
           ))}
-          <ThemeToggle value={theme} onChange={setTheme} />
           <button
             type="button"
             className="btn btn--small nav__cta--menu"

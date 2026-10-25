@@ -14,9 +14,10 @@ const SENT_KEY = 'aam-contact-sent'
 const MIN_WORDS = 10
 const countWords = (text) => text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length
 
-const NEEDS = [...services.map((s) => s.title), 'Not sure yet']
-const BUDGETS = ['Under Rs 100k', 'Rs 100k – 300k', 'Rs 300k – 800k', 'Rs 800k+', 'Not sure yet']
-const TIMELINES = ['Under 1 month', '1 – 2 months', '3+ months', 'Flexible']
+// Also used by the quick quote bar under the home hero (QuickQuote.jsx)
+export const NEEDS = [...services.map((s) => s.title), 'Not sure yet']
+export const BUDGETS = ['Under Rs 100k', 'Rs 100k – 300k', 'Rs 300k – 800k', 'Rs 800k+', 'Not sure yet']
+export const TIMELINES = ['Under 1 month', '1 – 2 months', '3+ months', 'Flexible']
 const CONTACT_WAYS = ['Email', 'WhatsApp', 'Phone call']
 
 const recentSends = () => {
@@ -66,8 +67,17 @@ const emptyForm = {
 
 // The "Start a project" form shown in the pop-up. `openedAt` is when the pop-up was last
 // opened, for the bot check: people take more than a few seconds, bots send instantly.
-export default function ProjectForm({ openedAt }) {
+// `prefill` holds answers already picked in the quick quote bar (service, budget, timeline).
+export default function ProjectForm({ openedAt, prefill }) {
   const [form, setForm] = useState(emptyForm)
+  // Each time the pop-up opens with answers from the quick bar, copy them in. Done while
+  // rendering (React's pattern for adjusting state when a prop changes), not in an effect.
+  const [filledFor, setFilledFor] = useState(0)
+  if (prefill && openedAt !== filledFor) {
+    setFilledFor(openedAt)
+    const picked = Object.fromEntries(Object.entries(prefill).filter(([k, v]) => v && k in emptyForm))
+    setForm((f) => ({ ...f, ...picked }))
+  }
   const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
   const [limited, setLimited] = useState(() => recentSends().length >= LIMIT)
   const mountedAt = useRef(Date.now())

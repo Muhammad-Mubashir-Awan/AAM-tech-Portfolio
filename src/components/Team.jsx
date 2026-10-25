@@ -27,7 +27,11 @@ export default function Team() {
             <Reveal key={`${m.name}-${i}`} index={i}>
               <TiltCard className="card team__card">
                 {m.photo ? (
-                  <img className="team__avatar team__avatar--photo" src={asset(m.photo)} alt={m.name} />
+                  <div className="team__photo">
+                    <div className="team__photo-inner">
+                      <img className="team__avatar team__avatar--photo" src={asset(m.photo)} alt={m.name} />
+                    </div>
+                  </div>
                 ) : (
                   <div className="team__avatar" aria-hidden="true">{initials(m.name)}</div>
                 )}

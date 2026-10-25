@@ -1,15 +1,14 @@
 import { useEffect, useRef } from 'react'
-import useLightTheme from '../hooks/useLightTheme.js'
 
-// Light mode's mouse effect: the hero is clean until the mouse comes onto it. Each tiny dot
+// The hero's mouse effect: the hero is clean until the mouse comes onto it. Each tiny dot
 // has a little weight: the cursor gently pushes nearby dots aside, drags them along as it
 // moves so they flow and curl around it, and a soft spring floats them back home. Dots
 // light up only while they're near the cursor or still moving, so a quick move leaves a
-// short fading wake. (Dark mode keeps its own water ripple instead.)
+// short fading wake. On phones a finger does the same: a tap ripples the dots out and a
+// drag pulls them along.
 
 const enabled =
   typeof window !== 'undefined' &&
-  window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
   !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const SPACING = 18 // px between dots
@@ -53,8 +52,7 @@ function buildPoints(width, height) {
 }
 
 export default function HoverField() {
-  const light = useLightTheme()
-  if (!enabled || !light) return null
+  if (!enabled) return null
   return <Field />
 }
 
@@ -85,10 +83,10 @@ function Field() {
       points = buildPoints(width, height)
     }
 
-    const onMove = (e) => {
+    const track = (clientX, clientY) => {
       const rect = hero.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+      const x = clientX - rect.left
+      const y = clientY - rect.top
       const inside = x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
       const now = performance.now()
       if (inside && pointer.inside) {
@@ -106,6 +104,23 @@ function Field() {
       pointer.x = x
       pointer.y = y
       pointer.time = now
+    }
+
+    // Mouse and pen; touch is handled by the touch listeners below
+    const onMove = (e) => {
+      if (e.pointerType !== 'touch') track(e.clientX, e.clientY)
+    }
+    // A finger on the hero acts like the cursor. Listeners are passive, so scrolling still works.
+    // A quick tap lingers a moment, so it still opens a visible ripple
+    let release = 0
+    const onTouch = (e) => {
+      clearTimeout(release)
+      const t = e.touches[0]
+      if (t) track(t.clientX, t.clientY)
+    }
+    const onTouchEnd = () => {
+      clearTimeout(release)
+      release = setTimeout(() => { pointer.inside = false }, 300)
     }
 
     const draw = (now) => {
@@ -233,6 +248,10 @@ function Field() {
     start()
 
     window.addEventListener('pointermove', onMove, { passive: true })
+    hero.addEventListener('touchstart', onTouch, { passive: true })
+    hero.addEventListener('touchmove', onTouch, { passive: true })
+    hero.addEventListener('touchend', onTouchEnd)
+    hero.addEventListener('touchcancel', onTouchEnd)
     document.documentElement.addEventListener('pointerleave', onLeave)
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
@@ -240,6 +259,11 @@ function Field() {
       io.disconnect()
       ro.disconnect()
       window.removeEventListener('pointermove', onMove)
+      hero.removeEventListener('touchstart', onTouch)
+      hero.removeEventListener('touchmove', onTouch)
+      hero.removeEventListener('touchend', onTouchEnd)
+      hero.removeEventListener('touchcancel', onTouchEnd)
+      clearTimeout(release)
       document.documentElement.removeEventListener('pointerleave', onLeave)
       document.removeEventListener('visibilitychange', onVisibility)
     }
