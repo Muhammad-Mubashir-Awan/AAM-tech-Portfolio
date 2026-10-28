@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { company } from '../data.js'
+import useIsClient from '../hooks/useIsClient.js'
 import { Button } from '@/components/ui/button'
 
 const CONSENT_KEY = 'aam-analytics-consent' // 'granted' | 'denied'
@@ -40,6 +41,7 @@ export const openCookieSettings = () => window.dispatchEvent(new Event(SETTINGS_
 // remembered in this browser, so the notice only comes back through "Cookie settings".
 export default function Analytics() {
   const id = company.gaId
+  const isClient = useIsClient()
   const [consent, setConsent] = useState(readConsent)
   const barRef = useRef(null)
   const focusBar = useRef(false)
@@ -67,7 +69,8 @@ export default function Analytics() {
     barRef.current?.querySelector('button')?.focus()
   }, [consent])
 
-  if (!id || consent) return null
+  // Never in the pre-built HTML: whether to ask depends on the choice saved in this browser
+  if (!isClient || !id || consent) return null
 
   const choose = (value) => {
     try {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { asset, clientLogos, counters, visible } from '../data.js'
+import useIsClient from '../hooks/useIsClient.js'
 import useReveal from '../hooks/useReveal.js'
 import SampleTag from './SampleTag.jsx'
 import TechStack from './TechStack.jsx'
@@ -8,9 +9,10 @@ const reducedMotion =
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Counts from 0 up to `value` (easing out) once `run` turns true; shows the final number
-// straight away for visitors who prefer reduced motion.
+// straight away for visitors who prefer reduced motion (once the page is live in their browser).
 function CountUp({ value, suffix, run }) {
-  const [n, setN] = useState(reducedMotion ? value : 0)
+  const isClient = useIsClient()
+  const [n, setN] = useState(0)
   useEffect(() => {
     if (!run || reducedMotion) return
     let frame
@@ -26,7 +28,7 @@ function CountUp({ value, suffix, run }) {
   }, [run, value])
   return (
     <>
-      {n}
+      {isClient && reducedMotion ? value : n}
       {suffix}
     </>
   )

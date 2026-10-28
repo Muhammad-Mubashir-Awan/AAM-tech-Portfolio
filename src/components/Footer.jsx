@@ -128,7 +128,8 @@ export default function Footer() {
 
         <div className={`${mono} flex flex-wrap items-center justify-between gap-4 border-t border-border pt-[1.6rem] text-[0.75rem] text-muted-foreground`}>
           <p className="m-0">
-            © {new Date().getFullYear()} {company.name}. All rights reserved.
+            {/* The year is fixed when the site is built; the browser may update it on 1 January */}
+            © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {company.name}. All rights reserved.
             <span className="opacity-75"> · {company.tagline}</span>
             <span aria-hidden="true"> · </span>
             <Link to="/privacy" className="text-inherit underline underline-offset-2 hover:text-foreground">Privacy policy</Link>

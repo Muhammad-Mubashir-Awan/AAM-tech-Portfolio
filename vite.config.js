@@ -24,14 +24,18 @@ const withPageTags = (html, { title, description, url }) =>
 // GitHub Pages serves the site from /<repo>/, so the build needs that base path.
 // `npm run preview` uses it too, so it serves dist/ exactly like GitHub Pages.
 // Dev keeps / so the local dev server works as before.
-export default defineConfig(({ command, isPreview }) => ({
+// `npm run build` makes two builds: the site itself, then a server build of
+// src/entry-server.jsx that scripts/prerender.js uses to fill each page's HTML.
+export default defineConfig(({ command, isPreview, isSsrBuild }) => ({
   base: command === 'build' || isPreview ? '/AAM-tech-Portfolio/' : '/',
   // '@/...' imports point at src/ (used by the shadcn components)
   resolve: { alias: { '@': resolve('src') } },
+  // The server build bundles its packages too, so it runs in Node without extra setup
+  ssr: { noExternal: true },
   plugins: [
     react(),
     tailwindcss(),
-    {
+    !isSsrBuild && {
       // GitHub Pages has no rewrites, so a refresh on /work would return 404. work.html etc.
       // (one per page listed in src/seo.js) make the real pages load with a proper 200 status,
       // each with its own tags; 404.html catches any other address.

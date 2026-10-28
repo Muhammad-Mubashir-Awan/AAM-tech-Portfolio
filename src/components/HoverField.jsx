@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import useIsClient from '../hooks/useIsClient.js'
 
 // The hero's mouse effect: the hero is clean until the mouse comes onto it. Each tiny dot
 // has a little weight: the cursor gently pushes nearby dots aside, drags them along as it
@@ -51,8 +52,10 @@ function buildPoints(width, height) {
   return points
 }
 
+// Browser only: the canvas is added once the page is live, never in the pre-built HTML
 export default function HoverField() {
-  if (!enabled) return null
+  const isClient = useIsClient()
+  if (!isClient || !enabled) return null
   return <Field />
 }
 
@@ -128,7 +131,9 @@ function Field() {
 
     const draw = (now) => {
       frame = requestAnimationFrame(draw)
-      const dt = Math.min((now - last) / 1000, 0.05)
+      // A frame's timestamp can be slightly earlier than the moment the loop was woken up, so
+      // never let time run backwards
+      const dt = Math.min(Math.max(now - last, 0) / 1000, 0.05)
       last = now
       const t = now / 1000
 
@@ -218,8 +223,9 @@ function Field() {
       }
 
       ctx.clearRect(0, 0, width, height)
-      // Nothing lit and no cursor: the field is back at rest, so stop until the next touch
-      if (!active && drawn === 0) {
+      // Cursor gone, its influence faded and nothing lit: the field is back at rest, so stop
+      // until the next touch. While the cursor is on the hero the loop always keeps running.
+      if (!pointer.inside && !active && drawn === 0) {
         stop()
         return
       }

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { company } from '../data.js'
+import useIsClient from '../hooks/useIsClient.js'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,7 +26,10 @@ const normaliseUrl = (text) => {
 export default function AuditForm({ className }) {
   const [form, setForm] = useState(empty)
   const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
-  const [limited, setLimited] = useState(() => recentSends().length >= LIMIT)
+  const isClient = useIsClient()
+  // The daily limit is saved in this browser, so it only applies once the page is live
+  const [limitReached, setLimitReached] = useState(() => recentSends().length >= LIMIT)
+  const limited = isClient && limitReached
   const startedAt = useRef(Date.now())
 
   const update = (e) => {
@@ -43,7 +47,7 @@ export default function AuditForm({ className }) {
       return
     }
     if (recentSends().length >= LIMIT) {
-      setLimited(true)
+      setLimitReached(true)
       return
     }
     // Too fast to be a person: pretend it worked so the bot learns nothing
@@ -76,7 +80,7 @@ export default function AuditForm({ className }) {
       rememberSend()
       setForm(empty)
       setStatus('sent')
-      setLimited(recentSends().length >= LIMIT)
+      setLimitReached(recentSends().length >= LIMIT)
     } catch {
       setStatus('error')
     }

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { MailIcon } from 'lucide-react'
 import { company, services } from '../data.js'
+import useIsClient from '../hooks/useIsClient.js'
 import { WhatsAppIcon, WhatsAppLink } from './WhatsAppLink.jsx'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,7 +57,10 @@ export const emptyForm = {
 // `directLinks={false}` hides the email / WhatsApp buttons there (they sit beside the form).
 export default function ProjectForm({ openedAt, form, setForm, idPrefix = 'pf', directLinks = true }) {
   const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
-  const [limited, setLimited] = useState(() => recentSends().length >= LIMIT)
+  const isClient = useIsClient()
+  // The daily limit is saved in this browser, so it only applies once the page is live
+  const [limitReached, setLimitReached] = useState(() => recentSends().length >= LIMIT)
+  const limited = isClient && limitReached
   const mountedAt = useRef(Date.now())
   const words = countWords(form.message)
   const needsPhone = form.contactVia !== 'Email'
@@ -95,7 +99,7 @@ export default function ProjectForm({ openedAt, form, setForm, idPrefix = 'pf', 
     if (invalid(e.currentTarget)) return
 
     if (recentSends().length >= LIMIT) {
-      setLimited(true)
+      setLimitReached(true)
       return
     }
 
@@ -145,7 +149,7 @@ export default function ProjectForm({ openedAt, form, setForm, idPrefix = 'pf', 
       notifyWhatsApp(form.name)
       setForm(emptyForm)
       setStatus('sent')
-      setLimited(recentSends().length >= LIMIT)
+      setLimitReached(recentSends().length >= LIMIT)
     } catch {
       setStatus('error')
     }
