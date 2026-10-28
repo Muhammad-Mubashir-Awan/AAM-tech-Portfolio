@@ -31,7 +31,7 @@ export const company = {
   calLink: '',
   // Google Analytics 4 measurement ID, e.g. 'G-ABC123XYZ'. While empty, no analytics or
   // cookie notice is loaded.
-  gaId: '',
+  gaId: 'G-HN90VM1QSG',
   location: 'Remote — working with clients worldwide',
   // Paste each page's link between the quotes. Empty ones are hidden from the footer.
   socials: [
@@ -209,28 +209,14 @@ export const techStack = ['React', 'JavaScript', 'Tailwind CSS', 'shadcn/ui', 'V
 // The logo row stays hidden while this list is empty.
 export const clientLogos = []
 
-// TODO: replace with real client reviews (ask happy clients for 2–3 sentences)
+// Client reviews, copied from our Google Business profile. Add new ones here as they come in
+// (only reviews with written text work as quotes).
 export const testimonials = [
   {
-    quote: 'They understood exactly what we needed and delivered a fast, beautiful site ahead of schedule. Customers now book online instead of calling.',
-    name: 'Sample client',
-    role: 'Restaurant owner',
+    quote: 'Great experience with AAM Technologies! A highly professional and talented team with excellent service and quality of work. Highly Recommended!',
+    name: 'Syed Hammad Hassan',
+    role: 'Google review',
     rating: 5,
-    sample: true,
-  },
-  {
-    quote: 'Clear communication from day one, honest pricing and a site we can update ourselves. Enquiries went up within the first month.',
-    name: 'Sample client',
-    role: 'Founder, online store',
-    rating: 5,
-    sample: true,
-  },
-  {
-    quote: 'Professional, quick to reply and genuinely helpful after launch. Our new website finally looks like the business we are.',
-    name: 'Sample client',
-    role: 'Director, service company',
-    rating: 5,
-    sample: true,
   },
 ]
 

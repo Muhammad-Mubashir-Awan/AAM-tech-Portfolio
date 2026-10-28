@@ -26,9 +26,10 @@ export default function Testimonials() {
           title="What our clients say"
           text="Businesses we've worked with, in their own words."
         />
-        <div className="grid gap-6 md:grid-cols-3">
+        {/* Up to three per row, centred; a single review gets a wider card */}
+        <div className="flex flex-wrap justify-center gap-6">
           {items.map((t, i) => (
-            <Reveal key={`${t.name}-${i}`} index={i} className="flex">
+            <Reveal key={`${t.name}-${i}`} index={i} className={`flex w-full ${items.length === 1 ? 'max-w-2xl' : 'md:w-[calc((100%-3rem)/3)]'}`}>
               <figure className="m-0 flex w-full flex-col rounded-xl border border-pine-800/10 bg-card/90 p-7 shadow-[0_10px_30px_rgba(11,43,38,0.08)]">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div className="flex gap-0.5 text-amber-500" role="img" aria-label={`${t.rating} out of 5 stars`}>
