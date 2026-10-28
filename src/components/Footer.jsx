@@ -130,6 +130,8 @@ export default function Footer() {
           <p className="m-0">
             © {new Date().getFullYear()} {company.name}. All rights reserved.
             <span className="opacity-75"> · {company.tagline}</span>
+            <span aria-hidden="true"> · </span>
+            <Link to="/privacy" className="text-inherit underline underline-offset-2 hover:text-foreground">Privacy policy</Link>
             {/* Lets visitors change their Accept / Decline choice (only when analytics is set up) */}
             {company.gaId && (
               <>

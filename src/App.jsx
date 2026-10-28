@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Hero from './components/Hero.jsx'
 import QuickQuote from './components/QuickQuote.jsx'
@@ -17,6 +17,8 @@ import AboutPage from './pages/AboutPage.jsx'
 import ServicesPage from './pages/ServicesPage.jsx'
 import PricingPage from './pages/PricingPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'
+import PrivacyPage from './pages/PrivacyPage.jsx'
+import NotFound from './pages/NotFound.jsx'
 import { ProjectModalProvider } from './components/ProjectModal.jsx'
 
 // Kept short on purpose: pricing, FAQ, team and contact options each have their own page
@@ -54,7 +56,8 @@ export default function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />

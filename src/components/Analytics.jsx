@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { company } from '../data.js'
 import { Button } from '@/components/ui/button'
 
@@ -86,7 +87,8 @@ export default function Analytics() {
       className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-2xl rounded-xl border border-border bg-card p-4 shadow-[0_16px_40px_-16px_rgba(5,31,32,0.45)] md:bottom-6 md:flex md:items-center md:gap-6 md:p-5"
     >
       <p className="mb-3 text-[0.9rem] text-foreground md:mb-0 md:flex-1">
-        We use cookies to understand how visitors use our site, so we can improve it. No ads, no selling data.
+        We use cookies to understand how visitors use our site, so we can improve it. No ads, no selling data.{' '}
+        <Link to="/privacy" className="font-medium text-pine-600 underline underline-offset-2">Privacy policy</Link>
       </p>
       <div className="flex flex-none gap-2">
         <Button size="sm" onClick={() => choose('granted')}>Accept</Button>
