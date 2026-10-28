@@ -1,18 +1,13 @@
 import { useRef, useState } from 'react'
+import { MailIcon } from 'lucide-react'
 import { company, services } from '../data.js'
-import { WhatsAppIcon, WhatsAppLink } from './WhatsAppButton.jsx'
+import { WhatsAppIcon, WhatsAppLink } from './WhatsAppLink.jsx'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
-// Formspree's free plan allows 50 messages a month, so each browser may send
-// at most LIMIT messages per 24 hours. This lives in the visitor's browser, so it
-// stops casual repeat sending; a determined person could still get round it.
-const LIMIT = 2
-const DAY = 24 * 60 * 60 * 1000
-const SENT_KEY = 'aam-contact-sent'
+import { LIMIT, recentSends, rememberSend, tooFast } from '@/lib/sendLimit'
 
 // One line isn't enough to quote from, so the message needs at least this many words.
 // A word must contain a letter or number (any language), so "- - - -" doesn't count.
@@ -24,23 +19,6 @@ export const NEEDS = [...services.map((s) => s.title), 'Not sure yet']
 export const BUDGETS = ['Under Rs 100k', 'Rs 100k – 300k', 'Rs 300k – 800k', 'Rs 800k+', 'Not sure yet']
 export const TIMELINES = ['Under 1 month', '1 – 2 months', '3+ months', 'Flexible']
 const CONTACT_WAYS = ['Email', 'WhatsApp', 'Phone call']
-
-const recentSends = () => {
-  try {
-    const times = JSON.parse(localStorage.getItem(SENT_KEY)) || []
-    return times.filter((t) => Date.now() - t < DAY)
-  } catch {
-    return []
-  }
-}
-
-const rememberSend = () => {
-  try {
-    localStorage.setItem(SENT_KEY, JSON.stringify([...recentSends(), Date.now()]))
-  } catch {
-    // Storage blocked: no limit, but sending still works
-  }
-}
 
 // Pings the owner's WhatsApp so they know to check their email. Fire-and-forget: the reply isn't
 // needed, and a failure here must never make a message that was sent look like it failed.
@@ -70,19 +48,13 @@ export const emptyForm = {
   _gotcha: '',
 }
 
-// The "Start a project" form shown in the pop-up. `openedAt` is when the pop-up was last
+// The "Start a project" form shown in the pop-up and on the Contact page. `openedAt` is when the pop-up was last
 // opened, for the bot check: people take more than a few seconds, bots send instantly.
-// `prefill` holds answers already picked in the quick quote bar (service, budget, timeline).
-// `form` / `setForm` live in the pop-up provider, so a half-written brief survives closing it.
-export default function ProjectForm({ openedAt, prefill, form, setForm }) {
-  // Each time the pop-up opens with answers from the quick bar, copy them in. Done while
-  // rendering (React's pattern for adjusting state when a prop changes), not in an effect.
-  const [filledFor, setFilledFor] = useState(0)
-  if (prefill && openedAt !== filledFor) {
-    setFilledFor(openedAt)
-    const picked = Object.fromEntries(Object.entries(prefill).filter(([k, v]) => v && k in emptyForm))
-    setForm((f) => ({ ...f, ...picked }))
-  }
+// `form` / `setForm` live in the pop-up provider, so a half-written brief survives closing it
+// (and answers picked in the quick quote bar or on a pricing card are already filled in).
+// `idPrefix` keeps field ids unique when the form is also shown on the Contact page, and
+// `directLinks={false}` hides the email / WhatsApp buttons there (they sit beside the form).
+export default function ProjectForm({ openedAt, form, setForm, idPrefix = 'pf', directLinks = true }) {
   const [status, setStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
   const [limited, setLimited] = useState(() => recentSends().length >= LIMIT)
   const mountedAt = useRef(Date.now())
@@ -128,7 +100,7 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
     }
 
     // Too fast to be a person: pretend it worked so the bot learns nothing
-    if (Date.now() - (openedAt ?? mountedAt.current) < 3000) {
+    if (tooFast(openedAt || mountedAt.current)) {
       setStatus('sent')
       return
     }
@@ -185,41 +157,42 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
   const field = 'grid gap-2 text-[0.9rem] font-medium'
   const input = 'h-12 rounded-[10px] bg-background px-4 text-base md:text-[0.95rem]'
   const status_ = 'rounded-[10px] border px-4 py-3 text-[0.9rem] [&_a]:underline'
+  const direct = 'inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3.5 py-2 text-[0.85rem] font-medium text-foreground transition-colors hover:border-primary hover:bg-secondary'
 
   return (
     <form className="grid gap-x-5 gap-y-[1.1rem] p-5 md:grid-cols-2 md:p-6" onSubmit={submit}>
       <div className={field}>
-        <Label htmlFor="pf-name">Your name {req}</Label>
-        <Input id="pf-name" className={input} name="name" value={form.name} onChange={update} required maxLength={80} autoComplete="name" placeholder="Ali Khan" />
+        <Label htmlFor={`${idPrefix}-name`}>Your name {req}</Label>
+        <Input id={`${idPrefix}-name`} className={input} name="name" value={form.name} onChange={update} required maxLength={80} autoComplete="name" placeholder="Ali Khan" />
       </div>
       <div className={field}>
-        <Label htmlFor="pf-email">Email {req}</Label>
-        <Input id="pf-email" className={input} type="email" name="email" value={form.email} onChange={update} required autoComplete="email" placeholder="you@company.com" />
+        <Label htmlFor={`${idPrefix}-email`}>Email {req}</Label>
+        <Input id={`${idPrefix}-email`} className={input} type="email" name="email" value={form.email} onChange={update} required autoComplete="email" placeholder="you@company.com" />
       </div>
 
       <div className={field}>
-        <Label htmlFor="pf-company">Company / organisation {optional}</Label>
-        <Input id="pf-company" className={input} name="company" value={form.company} onChange={update} maxLength={100} autoComplete="organization" placeholder="Your business name" />
+        <Label htmlFor={`${idPrefix}-company`}>Company / organisation {optional}</Label>
+        <Input id={`${idPrefix}-company`} className={input} name="company" value={form.company} onChange={update} maxLength={100} autoComplete="organization" placeholder="Your business name" />
       </div>
       <div className={field}>
-        <Label htmlFor="pf-service">What do you need?</Label>
+        <Label htmlFor={`${idPrefix}-service`}>What do you need?</Label>
         <Select name="service" value={form.service} onValueChange={setField('service')}>
-          <SelectTrigger id="pf-service"><SelectValue placeholder="Choose a service…" /></SelectTrigger>
+          <SelectTrigger id={`${idPrefix}-service`}><SelectValue placeholder="Choose a service…" /></SelectTrigger>
           <SelectContent>{NEEDS.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
         </Select>
       </div>
 
       <div className={field}>
-        <Label htmlFor="pf-budget">Budget</Label>
+        <Label htmlFor={`${idPrefix}-budget`}>Budget</Label>
         <Select name="budget" value={form.budget} onValueChange={setField('budget')}>
-          <SelectTrigger id="pf-budget"><SelectValue placeholder="Choose a range…" /></SelectTrigger>
+          <SelectTrigger id={`${idPrefix}-budget`}><SelectValue placeholder="Choose a range…" /></SelectTrigger>
           <SelectContent>{BUDGETS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
         </Select>
       </div>
       <div className={field}>
-        <Label htmlFor="pf-timeline">Timeline</Label>
+        <Label htmlFor={`${idPrefix}-timeline`}>Timeline</Label>
         <Select name="timeline" value={form.timeline} onValueChange={setField('timeline')}>
-          <SelectTrigger id="pf-timeline"><SelectValue placeholder="When do you need it?" /></SelectTrigger>
+          <SelectTrigger id={`${idPrefix}-timeline`}><SelectValue placeholder="When do you need it?" /></SelectTrigger>
           <SelectContent>{TIMELINES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
         </Select>
       </div>
@@ -239,9 +212,9 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
         </div>
       </fieldset>
       <div className={field}>
-        <Label htmlFor="pf-phone">Phone / WhatsApp number {needsPhone ? req : optional}</Label>
+        <Label htmlFor={`${idPrefix}-phone`}>Phone / WhatsApp number {needsPhone ? req : optional}</Label>
         <Input
-          id="pf-phone"
+          id={`${idPrefix}-phone`}
           className={input}
           type="tel"
           name="phone"
@@ -257,9 +230,9 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
       </div>
 
       <div className={`${field} md:col-span-2`}>
-        <Label htmlFor="pf-message">Project details {req}</Label>
+        <Label htmlFor={`${idPrefix}-message`}>Project details {req}</Label>
         <Textarea
-          id="pf-message"
+          id={`${idPrefix}-message`}
           className="min-h-28 rounded-[10px] bg-background px-4 py-3 text-base md:text-[0.95rem]"
           name="message"
           rows="4"
@@ -267,11 +240,11 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
           onChange={update}
           required
           maxLength={2000}
-          aria-describedby="message-count"
+          aria-describedby={`${idPrefix}-message-count`}
           placeholder={`What problem should the website solve, who is it for, and what must it include? (at least ${MIN_WORDS} words)`}
         />
         {/* Read out with the box via aria-describedby, not on every keystroke */}
-        <span id="message-count" aria-hidden="true" className={`justify-self-end text-[0.8rem] font-normal ${words >= MIN_WORDS ? 'text-green-700' : 'text-muted-foreground'}`}>
+        <span id={`${idPrefix}-message-count`} aria-hidden="true" className={`justify-self-end text-[0.8rem] font-normal ${words >= MIN_WORDS ? 'text-green-700' : 'text-muted-foreground'}`}>
           {words >= MIN_WORDS ? `${words} words ✓` : `${words} / ${MIN_WORDS} words`}
         </span>
       </div>
@@ -312,11 +285,19 @@ export default function ProjectForm({ openedAt, prefill, form, setForm }) {
         </p>
       )}
 
-      <p className="m-0 text-center text-[0.85rem] md:col-span-2 [&_a]:text-pine-600">
-        Prefer to reach us directly? <a href={`mailto:${company.email}`}>{company.email}</a>
-        <span aria-hidden="true"> · </span>
-        <WhatsAppLink page="contact" className="inline-flex items-center gap-1"><WhatsAppIcon className="size-4 text-[#25d366]" /> WhatsApp</WhatsAppLink>
-      </p>
+      {/* Other ways to reach us (the Contact page shows these beside the form instead) */}
+      {directLinks && (
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 border-t border-border pt-4 md:col-span-2">
+          {/* Own line on phones, so the two buttons stay side by side */}
+          <span className="basis-full text-center text-[0.85rem] text-muted-foreground sm:basis-auto">Prefer to reach us directly?</span>
+          <a href={`mailto:${company.email}`} className={direct}>
+            <MailIcon aria-hidden="true" className="size-4 text-pine-600" /> Email us
+          </a>
+          <WhatsAppLink page="contact" className={direct}>
+            <WhatsAppIcon className="size-4 text-[#25d366]" /> WhatsApp
+          </WhatsAppLink>
+        </div>
+      )}
     </form>
   )
 }

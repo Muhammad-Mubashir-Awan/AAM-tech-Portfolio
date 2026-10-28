@@ -3,9 +3,11 @@ import Projects from '../components/Projects.jsx'
 import PageHead from '../components/PageHead.jsx'
 import { useProjectModal } from '../components/ProjectModal.jsx'
 import { Button } from '@/components/ui/button'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 export default function Work() {
   const openProjectForm = useProjectModal()
+  usePageTitle('Our Work')
   return (
     <>
       <PageHead

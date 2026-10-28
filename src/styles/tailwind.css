@@ -73,7 +73,6 @@
   --animate-float-slow: float 7s ease-in-out infinite;
   --animate-caret: caret 0.9s steps(1) infinite;
   --animate-shimmer: shimmer 10s linear infinite;
-  --animate-ring: ring 2s ease-out 1.5s 3;
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -82,7 +81,6 @@
   @keyframes float { 50% { transform: translateY(-8px); } }
   @keyframes caret { 50% { opacity: 0; } }
   @keyframes shimmer { to { background-position: 300% 0; } }
-  @keyframes ring { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.6); opacity: 0; } }
 }
 
 @layer base {

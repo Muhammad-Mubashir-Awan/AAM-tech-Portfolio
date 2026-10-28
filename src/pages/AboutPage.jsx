@@ -2,13 +2,16 @@ import { Link } from 'react-router-dom'
 import { about, company } from '../data.js'
 import Reveal from '../components/Reveal.jsx'
 import Team from '../components/Team.jsx'
+import Values from '../components/Values.jsx'
 import PageHead from '../components/PageHead.jsx'
 import { useProjectModal } from '../components/ProjectModal.jsx'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import usePageTitle from '../hooks/usePageTitle.js'
 
 export default function AboutPage() {
   const openProjectForm = useProjectModal()
+  usePageTitle('About Us')
   return (
     <>
       <PageHead
@@ -18,6 +21,7 @@ export default function AboutPage() {
       />
 
       <Team />
+      <Values />
 
       <section className="py-18 md:py-25" id="story">
         <div className="wrap grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">

@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // The site's routes (see src/App.jsx), other than the home page
-const PAGES = ['about', 'work', 'contact']
+const PAGES = ['about', 'work', 'contact', 'services', 'pricing']
 
 // GitHub Pages serves the site from /<repo>/, so the build needs that base path.
 // `npm run preview` uses it too, so it serves dist/ exactly like GitHub Pages.

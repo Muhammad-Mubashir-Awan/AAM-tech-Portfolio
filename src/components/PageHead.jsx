@@ -1,6 +1,6 @@
 import HoverField from './HoverField.jsx'
 
-// The centred header at the top of the Our Work and About pages
+// The centred header at the top of every page except Home
 export default function PageHead({ eyebrow, title, intro, children }) {
   return (
     <section id="top" className="relative overflow-hidden pt-[130px] pb-10 sm:pt-[170px]">

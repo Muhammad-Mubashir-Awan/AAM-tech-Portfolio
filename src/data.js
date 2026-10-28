@@ -17,14 +17,21 @@ export const company = {
   // CallMeBot API key: when set, each contact-form message also sends a short WhatsApp alert
   // to the number above. Leave empty to switch the alert off. (Key is visible in the site code.)
   callmebotKey: '',
-  // Pre-filled WhatsApp greeting, picked by the page the visitor is on (client can edit it before sending)
+  // Pre-filled WhatsApp greetings (the visitor can edit them before sending)
   whatsappMessages: {
+    // Used by the WhatsApp links in the footer
     home: "Hi AAM Technology! 👋 I found you through your website and I'd love to chat about a project I have in mind.",
-    work: "Hi AAM Technology! 👋 I just saw your work on your website — I'd love something like that for my business. Can we talk?",
-    about: "Hi AAM Technology! 👋 I was reading about your team on your website and I'd love to chat about a project.",
-    // Used by the WhatsApp links in the "Start a project" form
+    // Used by the Contact page, the FAQ and the "Start a project" form
     contact: "Hi AAM Technology! 👋 I'd love to talk about a project with you. When's a good time?",
+    // Used by "Book a free call" until a Cal.com link is set below
+    call: "Hi AAM Technology! 👋 I'd like to book a free 15-minute call about my website. When are you free?",
   },
+  // Cal.com booking page, e.g. 'https://cal.com/aam-technology/15min'. While empty,
+  // "Book a free call" opens WhatsApp instead.
+  calLink: '',
+  // Google Analytics 4 measurement ID, e.g. 'G-ABC123XYZ'. While empty, no analytics or
+  // cookie notice is loaded.
+  gaId: '',
   location: 'Remote — working with clients worldwide',
   // Paste each page's link between the quotes. Empty ones are hidden from the footer.
   socials: [
@@ -57,37 +64,52 @@ export const stats = [
 // Selling points on the moving strip under the home hero (shown in capitals)
 export const marquee = ['Fast', 'Responsive', 'SEO-friendly', 'Custom-built', '24h replies', 'Working worldwide']
 
+// `includes` is the "What's included" list shown on the Services page
 export const services = [
   {
     icon: '◧',
     title: 'Website Design',
     text: 'Clean, modern interfaces designed around your brand and your customers — beautiful on every screen size.',
+    includes: ['Layouts designed around your brand', 'Mobile, tablet and desktop views', 'Your feedback built in before any code'],
   },
   {
     icon: '⌘',
     title: 'Web Development',
     text: 'Fast, accessible, SEO-friendly websites built with modern tools like React, so they load quickly and rank well.',
+    includes: ['Hand-coded with React and Tailwind CSS', 'Contact forms and WhatsApp button', 'Tested on real phones before launch'],
   },
   {
     icon: '◎',
     title: 'E-commerce',
     text: 'Online stores with smooth checkout, product management, and payment integration that turn visitors into buyers.',
+    includes: ['Product pages and smooth checkout', 'Online payments set up for you', 'Easy product and order management'],
   },
   {
     icon: '⟳',
     title: 'Redesign & Maintenance',
     text: 'Give an outdated site a fresh look, improve performance, and keep everything secure and up to date.',
+    includes: ['A fresh design for an outdated site', 'Speed and security fixes', 'Monthly updates and backups'],
   },
   {
     icon: '▤',
     title: 'Custom Web Apps',
     text: 'Dashboards, booking systems, and internal tools tailored to the way your business actually works.',
+    includes: ['Dashboards, bookings and internal tools', 'Built around how your team works', 'Connected to the tools you already use'],
   },
   {
     icon: '↗',
     title: 'SEO & Performance',
     text: 'Technical SEO, Core Web Vitals tuning, and analytics setup so you can measure and grow your traffic.',
+    includes: ['Technical SEO and page titles', 'Faster loading on every device', 'Google Analytics so you can see results'],
   },
+]
+
+// "How we work" steps on the Services page
+export const processSteps = [
+  { title: 'Plan', text: 'A free call to understand your business, goals and budget. You get a clear, fixed quote and timeline.' },
+  { title: 'Design', text: 'We design the key pages and share them with you. Nothing is built until you are happy with the look.' },
+  { title: 'Build', text: 'We code the site, connect your forms and analytics, and test it on phones, tablets and computers.' },
+  { title: 'Launch & support', text: 'We put your site live, show you how to update it, and stay on hand for changes after launch.' },
 ]
 
 // TODO: replace these sample projects with your real work.
@@ -163,3 +185,112 @@ export const values = [
   { icon: '◈', title: 'Transparent pricing', text: 'Clear quotes and timelines up front — no surprises.' },
   { icon: '⟳', title: 'Ongoing support', text: 'We stay on hand after launch for updates and improvements.' },
 ]
+
+// ---------------------------------------------------------------------------------------
+// SAMPLE CONTENT: anything marked `sample: true` is only shown on your own computer
+// while running `npm run dev`, with a "Sample" tag, and is HIDDEN on the live website,
+// so visitors never see made-up reviews or numbers. When you have the real thing, replace
+// the text and delete `sample: true`.
+// ---------------------------------------------------------------------------------------
+
+// Counters that count up on the home page. `value` is a number; `suffix` goes after it.
+export const counters = [
+  // TODO: put your real figures here, then delete `sample: true`
+  { value: 25, suffix: '+', label: 'Projects delivered', sample: true },
+  { value: 20, suffix: '+', label: 'Happy clients', sample: true },
+  { value: 5, suffix: '', label: 'Countries served', sample: true },
+  { value: 24, suffix: 'h', label: 'Reply time' },
+]
+
+// Tools we build with, shown as chips under the counters
+export const techStack = ['React', 'JavaScript', 'Tailwind CSS', 'shadcn/ui', 'Vite', 'Node.js', 'GitHub']
+
+// Client logos (files in /public), e.g. { name: 'Bloom Café', logo: '/clients/bloom.svg' }.
+// The logo row stays hidden while this list is empty.
+export const clientLogos = []
+
+// TODO: replace with real client reviews (ask happy clients for 2–3 sentences)
+export const testimonials = [
+  {
+    quote: 'They understood exactly what we needed and delivered a fast, beautiful site ahead of schedule. Customers now book online instead of calling.',
+    name: 'Sample client',
+    role: 'Restaurant owner',
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: 'Clear communication from day one, honest pricing and a site we can update ourselves. Enquiries went up within the first month.',
+    name: 'Sample client',
+    role: 'Founder, online store',
+    rating: 5,
+    sample: true,
+  },
+  {
+    quote: 'Professional, quick to reply and genuinely helpful after launch. Our new website finally looks like the business we are.',
+    name: 'Sample client',
+    role: 'Director, service company',
+    rating: 5,
+    sample: true,
+  },
+]
+
+// Pricing packages. `budget` must match one of the budget choices in the project form, so the
+// button opens the pop-up with that budget already selected.
+export const pricing = [
+  {
+    name: 'Starter',
+    price: 'Rs 100k',
+    budget: 'Rs 100k – 300k',
+    text: 'A sharp one-page or small website to get your business online fast.',
+    features: ['Up to 5 pages', 'Mobile-first, responsive design', 'Contact form + WhatsApp button', 'Basic SEO setup', '1 round of revisions', '2–3 weeks delivery'],
+    cta: 'Start with Starter',
+  },
+  {
+    name: 'Business',
+    price: 'Rs 300k',
+    budget: 'Rs 300k – 800k',
+    popular: true,
+    text: 'A complete website built to win customers, with the features growing businesses need.',
+    features: ['Up to 12 pages', 'Custom design & animations', 'Blog or content you can edit', 'SEO + Google Analytics', 'Speed optimisation', '1 month of support after launch'],
+    cta: 'Choose Business',
+  },
+  {
+    name: 'Custom',
+    price: 'Rs 800k',
+    budget: 'Rs 800k+',
+    text: 'Online stores, web apps and systems tailored to how your business works.',
+    features: ['E-commerce or custom web app', 'Payments, bookings or dashboards', 'Integrations with your tools', 'Advanced SEO & performance', 'Priority support', 'Timeline planned with you'],
+    cta: 'Discuss a custom build',
+  },
+]
+
+// Frequently asked questions, shown as an accordion on the Pricing page
+export const faqs = [
+  {
+    q: 'How long does a website take?',
+    a: 'A small website usually takes 2–3 weeks and a larger business site 4–6 weeks. Online stores and web apps are planned with you, with clear milestones.',
+  },
+  {
+    q: 'Do you handle hosting and the domain name?',
+    a: 'Yes. We can set up your domain, hosting and business email for you, or use the accounts you already have.',
+  },
+  {
+    q: 'Will I be able to update the website myself?',
+    a: 'Yes. If you need to change text, images or blog posts regularly, we build in an easy way to edit them and show you how it works.',
+  },
+  {
+    q: 'What do I need to provide?',
+    a: 'Your logo, photos and a rough idea of the text. Don\'t have them yet? We can help with copywriting and suggest images.',
+  },
+  {
+    q: 'How do payments work?',
+    a: 'Usually 50% to start and 50% at launch. Bigger projects can be split into milestones. You get a clear quote before any work starts.',
+  },
+  {
+    q: 'Do you offer support after launch?',
+    a: 'Yes. Every project includes a support period, and after that we offer monthly care plans for updates, backups and improvements.',
+  },
+]
+
+// Show `sample: true` items only on your own computer, never on the live site
+export const visible = (items) => items.filter((item) => !item.sample || import.meta.env.DEV)

@@ -13,7 +13,6 @@ export const useProjectModal = () => useContext(OpenContext)
 // button that opened it.
 export function ProjectModalProvider({ children }) {
   const [open, setOpen] = useState(false)
-  const [prefill, setPrefill] = useState(null)
   const [openedAt, setOpenedAt] = useState(0)
   // Kept here rather than in the form, so a half-written brief survives closing the pop-up
   const [form, setForm] = useState(emptyForm)
@@ -21,8 +20,10 @@ export function ProjectModalProvider({ children }) {
   // openModal({ service, budget, timeline }) pre-fills those answers. Buttons that pass
   // openModal straight to onClick hand it a click event instead, which is ignored.
   const openModal = useCallback((answers) => {
-    const isAnswers = answers && Object.getPrototypeOf(answers) === Object.prototype
-    setPrefill(isAnswers ? answers : null)
+    if (answers && Object.getPrototypeOf(answers) === Object.prototype) {
+      const picked = Object.fromEntries(Object.entries(answers).filter(([k, v]) => v && k in emptyForm))
+      setForm((f) => ({ ...f, ...picked }))
+    }
     setOpenedAt(Date.now())
     setOpen(true)
   }, [])
@@ -58,7 +59,7 @@ export function ProjectModalProvider({ children }) {
             </DialogClose>
           </header>
           <div className="overflow-y-auto overscroll-contain">
-            <ProjectForm openedAt={openedAt} prefill={prefill} form={form} setForm={setForm} />
+            <ProjectForm openedAt={openedAt} form={form} setForm={setForm} />
           </div>
         </DialogContent>
       </Dialog>

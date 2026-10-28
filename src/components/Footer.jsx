@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { asset, company, services, whatsappLink } from '../data.js'
 import { useProjectModal } from './ProjectModal.jsx'
 import { Button } from '@/components/ui/button'
+import BookCallLink from './BookCall.jsx'
 
 // Small line icons for the round buttons under the logo
 const ICONS = {
@@ -17,11 +18,12 @@ const ICONS = {
 }
 
 const companyLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/about', label: 'About Us' },
+  { to: '/services', label: 'Services' },
   { to: '/work', label: 'Our Work' },
-  { to: '/#team', label: 'Meet the team' },
-  { to: '/#recent-work', label: 'Recent projects' },
+  { to: '/pricing', label: 'Pricing' },
+  { to: '/pricing#faq', label: 'FAQs' },
+  { to: '/about', label: 'About Us' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 export default function Footer() {
@@ -45,7 +47,6 @@ export default function Footer() {
   const icon = 'fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] stroke-[1.7]'
 
   return (
-    // Extra bottom space keeps the footer links clear of the floating WhatsApp button
     <footer className="relative z-[1] border-t border-border bg-background/60 pt-18 pb-8 text-[0.92rem]">
       <div className="wrap">
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-6 pb-12">
@@ -98,7 +99,7 @@ export default function Footer() {
             <h3 className={colTitle}>Services</h3>
             <ul className="grid gap-[0.7rem]">
               {services.map((s) => (
-                <li key={s.title}><Link to="/#services" className={colLink}>{s.title}</Link></li>
+                <li key={s.title}><Link to="/services" className={colLink}>{s.title}</Link></li>
               ))}
             </ul>
           </nav>
@@ -116,6 +117,7 @@ export default function Footer() {
             <h3 className={colTitle}>Get in touch</h3>
             <ul className="grid gap-[0.7rem]">
               <li><button type="button" onClick={openProjectForm} className={colLink}>Start a project</button></li>
+              <li><BookCallLink className={colLink}>Book a free call</BookCallLink></li>
               <li><a href={`mailto:${company.email}`} className={colLink}>{company.email}</a></li>
               <li><a href={whatsappLink('home')} target="_blank" rel="noopener noreferrer" className={colLink}>WhatsApp us</a></li>
               <li className="text-muted-foreground">{company.location}</li>
@@ -123,7 +125,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className={`${mono} flex flex-wrap items-center justify-between gap-4 border-t border-border pt-[1.6rem] pb-18 text-[0.75rem] text-muted-foreground`}>
+        <div className={`${mono} flex flex-wrap items-center justify-between gap-4 border-t border-border pt-[1.6rem] text-[0.75rem] text-muted-foreground`}>
           <p className="m-0">
             © {new Date().getFullYear()} {company.name}. All rights reserved.
             <span className="opacity-75"> · {company.tagline}</span>
