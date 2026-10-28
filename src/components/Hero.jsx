@@ -1,16 +1,8 @@
 import { Link } from 'react-router-dom'
 import HoverField from './HoverField.jsx'
-import TypedTitle from './TypedTitle.jsx'
 import HeroShowcase from './HeroShowcase.jsx'
 import { useProjectModal } from './ProjectModal.jsx'
 import { Button } from '@/components/ui/button'
-
-// Typed in letter by letter when the page opens
-const headline = [
-  { text: 'We build ' },
-  { text: 'digital experiences', className: 'text-gradient-animated' },
-  { text: ' that grow businesses.' },
-]
 
 // Short promises shown under the buttons, each with a small icon
 const TRUST = [
@@ -32,8 +24,10 @@ export default function Hero() {
       <div className="wrap relative z-[1] grid items-center gap-9 sm:gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <p className="eyebrow">Web design & development studio</p>
+          {/* Shown in full straight away (it's the first thing visitors read); the shimmer on
+              the gradient words is the only motion */}
           <h1 className="text-glow text-[2.1rem] max-[360px]:text-[1.9rem] sm:text-[clamp(2.4rem,4.6vw,3.9rem)]">
-            <TypedTitle parts={headline} />
+            We build <span className="text-gradient-animated">digital experiences</span> that grow businesses.
           </h1>
           <p className="text-glow mb-6 max-w-130 text-base sm:mb-8 sm:text-[1.1rem]">
             Modern, fast and responsive websites for businesses, startups and organizations,

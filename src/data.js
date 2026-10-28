@@ -164,17 +164,22 @@ export const about = {
   ],
 }
 
-// Photos live in the `public` folder. `role` and `bio` are optional and only shown when set.
+// Photos live in the `public` folder, cropped to 4:5 (portrait): `photo` 600 px wide, and an
+// optional `photoLarge` 900 px wide for sharp high-resolution screens. The full-size originals
+// (mubashir.webp, abdal.webp) stay in `public` to make new crops from. `role` and `bio` are
+// optional and only shown when set.
 export const team = [
   // TODO: rewrite these placeholder descriptions in your own words
   {
     name: 'Muhammad Mubashir',
-    photo: '/mubashir.webp',
+    photo: '/mubashir-600.webp',
+    photoLarge: '/mubashir-900.webp',
     bio: 'Part of the AAM Technology team, bringing creative ideas and clean code together to deliver standout digital experiences for clients worldwide.',
   },
   {
     name: 'Abdal Niazi',
-    photo: '/abdal.webp',
+    photo: '/abdal-600.webp',
+    photoLarge: '/abdal-900.webp',
     bio: 'Part of the AAM Technology team, focused on building reliable, well-crafted web experiences for clients around the world.',
   },
 ]

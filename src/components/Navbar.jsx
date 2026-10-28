@@ -59,7 +59,7 @@ export default function Navbar() {
       {/* The full menu needs laptop width; phones and tablets get the slide-in menu */}
       <div className="wrap flex h-[72px] items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Link to="/" aria-label={company.name} className="flex items-center gap-2.5 justify-self-start">
-          <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} alt="" />
+          <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} width={202} height={64} alt="" />
           <span className="text-[0.85rem] font-semibold tracking-[0.32em] uppercase">Technology</span>
         </Link>
 

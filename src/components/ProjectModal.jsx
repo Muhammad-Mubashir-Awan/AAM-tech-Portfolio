@@ -42,7 +42,7 @@ export function ProjectModalProvider({ children }) {
           className="flex max-h-[calc(100dvh-2rem)] w-[min(760px,calc(100%-2rem))] max-w-none flex-col gap-0 overflow-hidden rounded-[18px] border-border bg-card p-0 shadow-[0_30px_80px_-20px_rgba(5,31,32,0.55)] sm:max-w-none"
         >
           <header className="flex items-center gap-4 border-b border-border bg-linear-to-r from-primary to-pine-800 py-4 pr-4 pl-5 text-pine-100 sm:pr-5 sm:pl-6">
-            <img className="h-auto w-9 flex-none sm:w-11" src={asset('logo-mark-dark.png')} alt="" />
+            <img className="h-auto w-9 flex-none sm:w-11" src={asset('logo-mark-dark.png')} width={202} height={64} alt="" />
             <div>
               <DialogTitle className="m-0 font-display text-[1.05rem] font-bold text-pine-100 sm:text-[1.2rem]">
                 Start a project with {company.name}

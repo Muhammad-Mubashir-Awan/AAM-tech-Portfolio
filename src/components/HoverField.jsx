@@ -104,11 +104,14 @@ function Field() {
       pointer.x = x
       pointer.y = y
       pointer.time = now
+      // The loop sleeps while nothing is lit; the cursor or a finger arriving wakes it
+      if (inside) start()
     }
 
-    // Mouse and pen; touch is handled by the touch listeners below
+    // Mouse and pen; touch is handled by the touch listeners below. Skipped entirely while
+    // the hero is scrolled out of view, so moving the mouse elsewhere costs nothing.
     const onMove = (e) => {
-      if (e.pointerType !== 'touch') track(e.clientX, e.clientY)
+      if (visible && e.pointerType !== 'touch') track(e.clientX, e.clientY)
     }
     // A finger on the hero acts like the cursor. Listeners are passive, so scrolling still works.
     // A quick tap lingers a moment, so it still opens a visible ripple
@@ -141,9 +144,11 @@ function Field() {
       const glowDown = 1 - Math.exp(-dt * 2.5)
       const active = pointer.strength > 0.01
 
-      // Two opacity tiers, so the faintest dots never compete with the text
-      const faint = Array.from({ length: SHADES }, () => new Path2D())
-      const bold = Array.from({ length: SHADES }, () => new Path2D())
+      // Two opacity tiers, so the faintest dots never compete with the text. Each colour's
+      // path is only created once a dash needs it.
+      const faint = []
+      const bold = []
+      let drawn = 0
 
       for (const p of points) {
         const dx = p.x - pointer.x
@@ -205,16 +210,24 @@ function Field() {
         // Colour drifts smoothly across the field in broad patches that slowly shift
         const n = Math.min(1, Math.max(0, 0.5 + wave(p.hx * 0.004, p.hy * 0.004, t * 0.3) * 1.1))
         const shade = Math.round(n * (SHADES - 1))
-        const path = (p.glow < 0.5 ? faint : bold)[shade]
+        const tier = p.glow < 0.5 ? faint : bold
+        const path = (tier[shade] ??= new Path2D())
         path.moveTo(x - ux, y - uy)
         path.lineTo(x + ux, y + uy)
+        drawn++
       }
 
       ctx.clearRect(0, 0, width, height)
+      // Nothing lit and no cursor: the field is back at rest, so stop until the next touch
+      if (!active && drawn === 0) {
+        stop()
+        return
+      }
       ctx.lineCap = 'round'
       ctx.lineWidth = 1.6
       for (const [paths, alpha] of [[faint, 0.5], [bold, 0.9]]) {
         ctx.globalAlpha = alpha
+        // forEach skips the colours that had no dashes this frame
         paths.forEach((path, i) => {
           ctx.strokeStyle = PALETTE[i]
           ctx.stroke(path)

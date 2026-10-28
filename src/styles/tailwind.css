@@ -71,7 +71,6 @@
   --animate-marquee: marquee 70s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-float-slow: float 7s ease-in-out infinite;
-  --animate-caret: caret 0.9s steps(1) infinite;
   --animate-shimmer: shimmer 10s linear infinite;
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
@@ -79,7 +78,6 @@
   /* Sliding from -50% to 0 carries the strip left to right; its two copies make it seamless */
   @keyframes marquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }
   @keyframes float { 50% { transform: translateY(-8px); } }
-  @keyframes caret { 50% { opacity: 0; } }
   @keyframes shimmer { to { background-position: 300% 0; } }
 }
 

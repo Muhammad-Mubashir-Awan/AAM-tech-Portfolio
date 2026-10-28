@@ -1,11 +1,25 @@
-import { copyFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { pages, pageTitle, SITE_URL } from './src/seo.js'
 
-// The site's routes (see src/App.jsx), other than the home page
-const PAGES = ['about', 'work', 'contact', 'services', 'pricing', 'privacy']
+// Text placed inside an HTML attribute or tag
+const esc = (text) => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+
+// Gives a copy of index.html a page's own title, description and address, so Google and
+// link previews don't treat every page as a copy of the home page
+const withPageTags = (html, { title, description, url }) =>
+  html
+    .replace(/<title>.*?<\/title>/, `<title>${esc(title)}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*/, `$1${esc(description)}`)
+    .replace(/(<meta property="og:title" content=")[^"]*/, `$1${esc(title)}`)
+    .replace(/(<meta property="og:description" content=")[^"]*/, `$1${esc(description)}`)
+    .replace(/(<meta property="og:url" content=")[^"]*/, `$1${url}`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*/, `$1${esc(title)}`)
+    .replace(/(<meta name="twitter:description" content=")[^"]*/, `$1${esc(description)}`)
+    .replace(/(<link rel="canonical" href=")[^"]*/, `$1${url}`)
 
 // GitHub Pages serves the site from /<repo>/, so the build needs that base path.
 // `npm run preview` uses it too, so it serves dist/ exactly like GitHub Pages.
@@ -18,14 +32,22 @@ export default defineConfig(({ command, isPreview }) => ({
     react(),
     tailwindcss(),
     {
-      // GitHub Pages has no rewrites, so a refresh on /work would return 404.
-      // work.html etc. make the real pages load with a proper 200 status (so Google
-      // indexes them and link previews work); 404.html catches any other URL.
+      // GitHub Pages has no rewrites, so a refresh on /work would return 404. work.html etc.
+      // (one per page listed in src/seo.js) make the real pages load with a proper 200 status,
+      // each with its own tags; 404.html catches any other address.
       name: 'github-pages-spa-fallback',
       closeBundle() {
-        for (const page of [...PAGES, '404']) {
-          copyFileSync(resolve('dist', 'index.html'), resolve('dist', `${page}.html`))
+        const shell = readFileSync(resolve('dist', 'index.html'), 'utf8')
+        for (const [path, page] of Object.entries(pages)) {
+          if (!path) continue // index.html already carries the home page's tags
+          const tags = { title: pageTitle(page.name), description: page.description, url: SITE_URL + path }
+          writeFileSync(resolve('dist', `${path}.html`), withPageTags(shell, tags))
         }
+        // Served with a 404 status for unknown addresses: kept out of Google's index
+        const notFound = withPageTags(shell, { title: pageTitle('Page not found'), description: pages[''].description, url: SITE_URL })
+          .replace(/\s*<link rel="canonical"[^>]*>/, '')
+          .replace('</head>', '  <meta name="robots" content="noindex" />\n  </head>')
+        writeFileSync(resolve('dist', '404.html'), notFound)
       },
     },
   ],

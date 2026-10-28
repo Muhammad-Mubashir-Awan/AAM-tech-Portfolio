@@ -66,7 +66,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border py-12 sm:grid-cols-3 lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:gap-10">
           <div className="col-span-full lg:col-span-1">
             <Link to="/" aria-label={company.name} className="flex items-center gap-2.5">
-              <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} alt="" />
+              <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} width={202} height={64} alt="" />
               <span className="text-[0.85rem] font-semibold tracking-[0.32em] uppercase">Technology</span>
             </Link>
             <p className="mt-[1.1rem] mb-[1.4rem] max-w-90 leading-relaxed">
