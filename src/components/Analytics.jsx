@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { company } from '../data.js'
 import { Button } from '@/components/ui/button'
 
@@ -30,15 +30,41 @@ function loadGoogleAnalytics(id) {
   document.head.appendChild(script)
 }
 
+// The footer's "Cookie settings" link fires this to show the notice again
+const SETTINGS_EVENT = 'aam:cookie-settings'
+export const openCookieSettings = () => window.dispatchEvent(new Event(SETTINGS_EVENT))
+
 // Visitor analytics with a cookie notice. Nothing loads, and no notice shows, until a GA4 ID is
-// set in data.js; after that, analytics only starts once the visitor clicks Accept.
+// set in data.js; after that, analytics only starts once the visitor clicks Accept. The choice is
+// remembered in this browser, so the notice only comes back through "Cookie settings".
 export default function Analytics() {
   const id = company.gaId
   const [consent, setConsent] = useState(readConsent)
+  const barRef = useRef(null)
+  const focusBar = useRef(false)
 
   useEffect(() => {
-    if (id && consent === 'granted') loadGoogleAnalytics(id)
+    if (!id) return
+    // Google's own switch: true stops gtag.js sending anything, even after it has loaded
+    window[`ga-disable-${id}`] = consent !== 'granted'
+    if (consent === 'granted') loadGoogleAnalytics(id)
   }, [id, consent])
+
+  // Reopened from the footer: show the notice and move keyboard focus into it
+  useEffect(() => {
+    const reopen = () => {
+      focusBar.current = true
+      setConsent(null)
+    }
+    window.addEventListener(SETTINGS_EVENT, reopen)
+    return () => window.removeEventListener(SETTINGS_EVENT, reopen)
+  }, [])
+
+  useEffect(() => {
+    if (consent || !focusBar.current) return
+    focusBar.current = false
+    barRef.current?.querySelector('button')?.focus()
+  }, [consent])
 
   if (!id || consent) return null
 
@@ -52,15 +78,17 @@ export default function Analytics() {
   }
 
   return (
+    // Centred along the bottom; text and buttons share one row on wider screens
     <div
+      ref={barRef}
       role="region"
       aria-label="Cookie notice"
-      className="fixed right-4 bottom-4 left-4 z-40 rounded-xl border border-border bg-card p-4 shadow-[0_16px_40px_-16px_rgba(5,31,32,0.45)] md:right-auto md:bottom-6 md:left-6 md:max-w-md md:p-5"
+      className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-2xl rounded-xl border border-border bg-card p-4 shadow-[0_16px_40px_-16px_rgba(5,31,32,0.45)] md:bottom-6 md:flex md:items-center md:gap-6 md:p-5"
     >
-      <p className="mb-3 text-[0.9rem] text-foreground">
+      <p className="mb-3 text-[0.9rem] text-foreground md:mb-0 md:flex-1">
         We use cookies to understand how visitors use our site, so we can improve it. No ads, no selling data.
       </p>
-      <div className="flex gap-2">
+      <div className="flex flex-none gap-2">
         <Button size="sm" onClick={() => choose('granted')}>Accept</Button>
         <Button size="sm" variant="outline" onClick={() => choose('denied')}>Decline</Button>
       </div>

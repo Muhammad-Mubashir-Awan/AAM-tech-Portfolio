@@ -3,6 +3,7 @@ import { asset, company, services, whatsappLink } from '../data.js'
 import { useProjectModal } from './ProjectModal.jsx'
 import { Button } from '@/components/ui/button'
 import BookCallLink from './BookCall.jsx'
+import { openCookieSettings } from './Analytics.jsx'
 
 // Small line icons for the round buttons under the logo
 const ICONS = {
@@ -129,6 +130,15 @@ export default function Footer() {
           <p className="m-0">
             © {new Date().getFullYear()} {company.name}. All rights reserved.
             <span className="opacity-75"> · {company.tagline}</span>
+            {/* Lets visitors change their Accept / Decline choice (only when analytics is set up) */}
+            {company.gaId && (
+              <>
+                <span aria-hidden="true"> · </span>
+                <button type="button" onClick={openCookieSettings} className="cursor-pointer border-0 bg-transparent p-0 text-inherit underline underline-offset-2 hover:text-foreground">
+                  Cookie settings
+                </button>
+              </>
+            )}
           </p>
           <button
             type="button"
