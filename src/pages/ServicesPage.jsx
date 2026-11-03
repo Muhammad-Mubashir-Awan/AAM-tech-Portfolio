@@ -19,7 +19,7 @@ export default function ServicesPage() {
         intro="From a simple landing page to a full web application, we handle design, development and launch."
       >
         <Button onClick={openProjectForm}>
-          Start your project <span data-arrow aria-hidden="true">→</span>
+          Start a project <span data-arrow aria-hidden="true">→</span>
         </Button>
         <Button asChild variant="outline">
           <Link to="/pricing">See pricing</Link>

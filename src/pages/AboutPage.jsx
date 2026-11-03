@@ -54,7 +54,7 @@ export default function AboutPage() {
             <h2>Let's build something together</h2>
             <div className="flex flex-wrap justify-center gap-4">
               <Button onClick={openProjectForm}>
-                Start your project <span data-arrow aria-hidden="true">→</span>
+                Start a project <span data-arrow aria-hidden="true">→</span>
               </Button>
               <Button asChild variant="outline">
                 <Link to="/work">See our work</Link>

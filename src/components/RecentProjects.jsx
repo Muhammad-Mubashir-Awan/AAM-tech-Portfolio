@@ -24,9 +24,11 @@ export default function RecentProjects() {
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Phones: one swipeable row, with the next card peeking in from the right so it's clear
+            there is more. From tablet width up it's the usual grid. */}
+        <div className="-mx-4 flex snap-x snap-mandatory scroll-pl-4 gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] md:mx-0 md:grid md:snap-none md:grid-cols-2 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
           {projects.slice(0, 3).map((p, i) => (
-            <Reveal key={p.title} index={i} className="flex">
+            <Reveal key={p.title} index={i} className="flex max-md:w-[80%] max-md:flex-none max-md:snap-start max-md:transform-none! max-md:opacity-100!">
               <article className={cn(liftCard, 'w-full')}>
                 <div className="overflow-hidden">
                   <div className={cn('relative grid aspect-[16/10] place-items-center', zoomOnHover)} style={{ background: p.gradient }}>

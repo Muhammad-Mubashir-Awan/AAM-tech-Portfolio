@@ -16,7 +16,7 @@ export default function Work() {
         intro="A selection of websites and apps we have designed and built for our clients."
       >
         <Button onClick={openProjectForm}>
-          Start your project <span data-arrow aria-hidden="true">→</span>
+          Start a project <span data-arrow aria-hidden="true">→</span>
         </Button>
         <Button asChild variant="outline">
           <Link to="/">Back to home</Link>

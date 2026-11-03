@@ -4,7 +4,7 @@ import { asset, company } from '../data.js'
 import ProjectForm, { emptyForm } from './ProjectForm.jsx'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 
-// Any "Contact Us" / "Start your project" button calls the function from this context
+// Any "Contact Us" / "Start a project" button calls the function from this context
 const OpenContext = createContext(() => {})
 export const useProjectModal = () => useContext(OpenContext)
 

@@ -35,7 +35,7 @@ export default function Hero() {
           </p>
           <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
             <Button onClick={openProjectForm} className="max-sm:px-3 max-sm:py-3 max-sm:text-[0.9rem]">
-              Start your project <span data-arrow aria-hidden="true" className="max-[420px]:hidden">→</span>
+              Start a project <span data-arrow aria-hidden="true" className="max-[420px]:hidden">→</span>
             </Button>
             <Button asChild variant="outline" className="max-sm:px-3 max-sm:py-3 max-sm:text-[0.9rem]">
               <Link to="/work">See our work</Link>

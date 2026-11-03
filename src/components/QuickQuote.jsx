@@ -27,7 +27,7 @@ export default function QuickQuote() {
     <div className="wrap relative z-[2] -mt-[72px] sm:-mt-[88px]">
       <form
         onSubmit={submit}
-        aria-label="Get a free quote"
+        aria-label="Quick project request"
         className="grid grid-cols-2 items-end gap-3 rounded-xl border border-border bg-card p-4 shadow-[0_24px_50px_-24px_rgba(5,31,32,0.4)] sm:grid-cols-3 sm:gap-4 sm:p-5 lg:grid-cols-[repeat(3,1fr)_auto]"
       >
         {FIELDS.map((f, i) => (
@@ -48,7 +48,7 @@ export default function QuickQuote() {
           </div>
         ))}
         <Button type="submit" className="col-span-2 min-h-12 sm:col-span-3 lg:col-span-1">
-          Get a free quote <span data-arrow aria-hidden="true">→</span>
+          Start a project <span data-arrow aria-hidden="true">→</span>
         </Button>
       </form>
     </div>

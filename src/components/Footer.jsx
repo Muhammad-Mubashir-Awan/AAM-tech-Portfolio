@@ -96,7 +96,8 @@ export default function Footer() {
             </p>
           </div>
 
-          <nav aria-label="Services">
+          {/* Hidden on phones: every one of these links goes to the Services page, which "Company" already links to */}
+          <nav aria-label="Services" className="max-sm:hidden">
             <h3 className={colTitle}>Services</h3>
             <ul className="grid gap-[0.7rem] pointer-coarse:gap-0">
               {services.map((s) => (
@@ -114,7 +115,7 @@ export default function Footer() {
             </ul>
           </nav>
 
-          <div className="col-span-full sm:col-span-1">
+          <div>
             <h3 className={colTitle}>Get in touch</h3>
             <ul className="grid gap-[0.7rem] pointer-coarse:gap-0">
               <li><button type="button" onClick={openProjectForm} className={colLink}>Start a project</button></li>
