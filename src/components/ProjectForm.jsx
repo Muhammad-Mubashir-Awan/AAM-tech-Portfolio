@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { LIMIT, recentSends, rememberSend, tooFast } from '@/lib/sendLimit'
+import { track } from '@/lib/track'
 
 // One line isn't enough to quote from, so the message needs at least this many words.
 // A word must contain a letter or number (any language), so "- - - -" doesn't count.
@@ -146,6 +147,13 @@ export default function ProjectForm({ openedAt, form, setForm, idPrefix = 'pf', 
       })
       if (!res.ok) throw new Error(`Formspree responded ${res.status}`)
       rememberSend()
+      // A lead for Google Analytics. Only the chosen service and budget range go with it, never
+      // the name, email, phone or message.
+      track('generate_lead', {
+        lead_source: idPrefix === 'contact' ? 'contact_page_form' : 'project_popup',
+        service: form.service || 'not_chosen',
+        budget: form.budget || 'not_chosen',
+      })
       notifyWhatsApp(form.name)
       setForm(emptyForm)
       setStatus('sent')

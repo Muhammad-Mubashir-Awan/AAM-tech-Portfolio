@@ -41,7 +41,7 @@ export default function Projects() {
                     ))}
                   </ul>
                   {/^https?:\/\//.test(p.link) && (
-                    <a href={p.link} className="mt-5 inline-block font-semibold text-pine-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                    <a href={p.link} className="mt-5 inline-flex items-center font-semibold text-pine-600 pointer-coarse:min-h-11 hover:underline" target="_blank" rel="noopener noreferrer">
                       View project →
                     </a>
                   )}

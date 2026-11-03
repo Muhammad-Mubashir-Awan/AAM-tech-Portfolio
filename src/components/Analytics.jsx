@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { company } from '../data.js'
 import useIsClient from '../hooks/useIsClient.js'
 import { Button } from '@/components/ui/button'
+import { track } from '@/lib/track'
 
 const CONSENT_KEY = 'aam-analytics-consent' // 'granted' | 'denied'
 
@@ -69,6 +70,27 @@ export default function Analytics() {
     barRef.current?.querySelector('button')?.focus()
   }, [consent])
 
+  // Counts taps on the contact links (WhatsApp, email, phone, booking page) as events. Only the
+  // button's own text is sent, never anything a visitor typed. track() does nothing unless the
+  // visitor accepted cookies.
+  useEffect(() => {
+    if (!id) return
+    const onClick = (e) => {
+      const link = e.target instanceof Element ? e.target.closest('a[href]') : null
+      if (!link) return
+      const href = link.getAttribute('href')
+      // The first line of the link's text, e.g. "Book a free call" (not its small print)
+      const link_text = (link.innerText || link.textContent).trim().split('\n')[0].trim().slice(0, 40)
+      if (href.includes('wa.me/')) track('whatsapp_click', { link_text })
+      else if (href.startsWith('mailto:')) track('email_click', { link_text })
+      else if (href.startsWith('tel:')) track('phone_click', { link_text })
+      else if (company.calLink && href === company.calLink) track('book_call_click', { link_text })
+    }
+    // Capture phase: runs before a link's own handler (the Android WhatsApp link redirects)
+    document.addEventListener('click', onClick, true)
+    return () => document.removeEventListener('click', onClick, true)
+  }, [id])
+
   // Never in the pre-built HTML: whether to ask depends on the choice saved in this browser
   if (!isClient || !id || consent) return null
 
@@ -87,15 +109,16 @@ export default function Analytics() {
       ref={barRef}
       role="region"
       aria-label="Cookie notice"
-      className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-2xl rounded-xl border border-border bg-card p-4 shadow-[0_16px_40px_-16px_rgba(5,31,32,0.45)] md:bottom-6 md:flex md:items-center md:gap-6 md:p-5"
+      className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-2xl rounded-xl border border-border bg-card p-3 shadow-[0_16px_40px_-16px_rgba(5,31,32,0.45)] md:bottom-6 md:flex md:items-center md:gap-6 md:p-5"
     >
-      <p className="mb-3 text-[0.9rem] text-foreground md:mb-0 md:flex-1">
-        We use cookies to understand how visitors use our site, so we can improve it. No ads, no selling data.{' '}
+      <p className="mb-2.5 text-[0.8125rem] leading-snug text-foreground md:mb-0 md:flex-1 md:text-[0.9rem] md:leading-normal">
+        We use cookies to count visits and improve the site. No ads, no selling data.{' '}
         <Link to="/privacy" className="font-medium text-pine-600 underline underline-offset-2">Privacy policy</Link>
       </p>
-      <div className="flex flex-none gap-2">
-        <Button size="sm" onClick={() => choose('granted')}>Accept</Button>
-        <Button size="sm" variant="outline" onClick={() => choose('denied')}>Decline</Button>
+      {/* On phones the two buttons share the row, which keeps the notice short */}
+      <div className="flex flex-none gap-2 max-md:[&>button]:flex-1">
+        <Button size="sm" className="pointer-coarse:min-h-11" onClick={() => choose('granted')}>Accept</Button>
+        <Button size="sm" variant="outline" className="pointer-coarse:min-h-11" onClick={() => choose('denied')}>Decline</Button>
       </div>
     </div>
   )

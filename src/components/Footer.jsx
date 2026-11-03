@@ -44,7 +44,8 @@ export default function Footer() {
 
   const mono = "[font-family:ui-monospace,'SFMono-Regular',Consolas,monospace]"
   const colTitle = `${mono} mb-[1.1rem] text-[0.72rem] font-semibold tracking-[0.14em] text-muted-foreground uppercase`
-  const colLink = 'cursor-pointer border-0 bg-transparent p-0 text-left text-foreground opacity-85 transition-[color,opacity] [overflow-wrap:anywhere] hover:text-pine-600 hover:opacity-100'
+  // On touch screens every link gets a 44 px tall tap area; mouse users keep the compact list
+  const colLink = 'inline-flex cursor-pointer items-center border-0 bg-transparent p-0 text-left text-foreground opacity-85 transition-[color,opacity] [overflow-wrap:anywhere] pointer-coarse:min-h-11 pointer-coarse:min-w-11 hover:text-pine-600 hover:opacity-100'
   const icon = 'fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] stroke-[1.7]'
 
   return (
@@ -65,9 +66,8 @@ export default function Footer() {
 
         <div className="grid grid-cols-2 gap-x-6 gap-y-8 border-t border-border py-12 sm:grid-cols-3 lg:grid-cols-[1.6fr_1fr_1fr_1fr] lg:gap-10">
           <div className="col-span-full lg:col-span-1">
-            <Link to="/" aria-label={company.name} className="flex items-center gap-2.5">
+            <Link to="/" aria-label={company.name} className="flex w-fit items-center pointer-coarse:py-2.5">
               <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} width={202} height={64} alt="" />
-              <span className="text-[0.85rem] font-semibold tracking-[0.32em] uppercase">Technology</span>
             </Link>
             <p className="mt-[1.1rem] mb-[1.4rem] max-w-90 leading-relaxed">
               {company.name} designs and builds fast, modern websites and web apps that help
@@ -80,7 +80,7 @@ export default function Footer() {
                     href={b.href}
                     aria-label={b.label}
                     title={b.label}
-                    className="grid size-[38px] place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-pine-600"
+                    className="grid size-[38px] place-items-center rounded-full pointer-coarse:size-11 border border-border text-muted-foreground transition-colors hover:border-primary hover:text-pine-600"
                     {...(b.label === 'Email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
                   >
                     <svg viewBox="0 0 24 24" aria-hidden="true" className={`size-[17px] ${icon}`}>{ICONS[b.label]}</svg>
@@ -98,7 +98,7 @@ export default function Footer() {
 
           <nav aria-label="Services">
             <h3 className={colTitle}>Services</h3>
-            <ul className="grid gap-[0.7rem]">
+            <ul className="grid gap-[0.7rem] pointer-coarse:gap-0">
               {services.map((s) => (
                 <li key={s.title}><Link to="/services" className={colLink}>{s.title}</Link></li>
               ))}
@@ -107,7 +107,7 @@ export default function Footer() {
 
           <nav aria-label="Company">
             <h3 className={colTitle}>Company</h3>
-            <ul className="grid gap-[0.7rem]">
+            <ul className="grid gap-[0.7rem] pointer-coarse:gap-0">
               {companyLinks.map((l) => (
                 <li key={l.label}><Link to={l.to} className={colLink}>{l.label}</Link></li>
               ))}
@@ -116,7 +116,7 @@ export default function Footer() {
 
           <div className="col-span-full sm:col-span-1">
             <h3 className={colTitle}>Get in touch</h3>
-            <ul className="grid gap-[0.7rem]">
+            <ul className="grid gap-[0.7rem] pointer-coarse:gap-0">
               <li><button type="button" onClick={openProjectForm} className={colLink}>Start a project</button></li>
               <li><BookCallLink className={colLink}>Book a free call</BookCallLink></li>
               <li><a href={`mailto:${company.email}`} className={colLink}>{company.email}</a></li>
@@ -130,14 +130,15 @@ export default function Footer() {
           <p className="m-0">
             {/* The year is fixed when the site is built; the browser may update it on 1 January */}
             © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {company.name}. All rights reserved.
-            <span className="opacity-75"> · {company.tagline}</span>
+            <span> · {company.tagline}</span>
             <span aria-hidden="true"> · </span>
-            <Link to="/privacy" className="text-inherit underline underline-offset-2 hover:text-foreground">Privacy policy</Link>
+            {/* On touch screens the padding and negative margin enlarge the tap area without moving the text */}
+            <Link to="/privacy" className="text-inherit underline underline-offset-2 hover:text-foreground pointer-coarse:-my-3.5 pointer-coarse:inline-block pointer-coarse:py-3.5">Privacy policy</Link>
             {/* Lets visitors change their Accept / Decline choice (only when analytics is set up) */}
             {company.gaId && (
               <>
                 <span aria-hidden="true"> · </span>
-                <button type="button" onClick={openCookieSettings} className="cursor-pointer border-0 bg-transparent p-0 text-inherit underline underline-offset-2 hover:text-foreground">
+                <button type="button" onClick={openCookieSettings} className="cursor-pointer border-0 bg-transparent p-0 text-inherit underline underline-offset-2 hover:text-foreground pointer-coarse:-my-3.5 pointer-coarse:inline-block pointer-coarse:py-3.5">
                   Cookie settings
                 </button>
               </>
@@ -146,7 +147,7 @@ export default function Footer() {
           <button
             type="button"
             onClick={backToTop}
-            className="group/top inline-flex cursor-pointer gap-1.5 rounded-full border border-border bg-transparent px-3.5 py-[0.45rem] text-foreground transition-colors hover:border-primary"
+            className="group/top inline-flex cursor-pointer items-center gap-1.5 pointer-coarse:min-h-11 rounded-full border border-border bg-transparent px-3.5 py-[0.45rem] text-foreground transition-colors hover:border-primary"
           >
             Back to top <span aria-hidden="true" className="transition-transform duration-200 group-hover/top:-translate-y-[3px] motion-reduce:transition-none">↑</span>
           </button>

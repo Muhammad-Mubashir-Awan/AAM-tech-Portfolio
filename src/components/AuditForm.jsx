@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { LIMIT, recentSends, rememberSend, tooFast } from '@/lib/sendLimit'
+import { track } from '@/lib/track'
 import { cn } from '@/lib/utils'
 
 const empty = { website: '', email: '', name: '', _gotcha: '' }
@@ -78,6 +79,7 @@ export default function AuditForm({ className }) {
       })
       if (!res.ok) throw new Error(`Formspree responded ${res.status}`)
       rememberSend()
+      track('generate_lead', { lead_source: 'free_audit' })
       setForm(empty)
       setStatus('sent')
       setLimitReached(recentSends().length >= LIMIT)

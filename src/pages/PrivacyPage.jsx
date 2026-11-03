@@ -4,7 +4,7 @@ import { openCookieSettings } from '../components/Analytics.jsx'
 import usePageTitle from '../hooks/usePageTitle.js'
 
 // Change this date whenever the text below is edited
-const UPDATED = '28 October 2026'
+const UPDATED = '3 November 2026'
 
 const ext = { target: '_blank', rel: 'noopener noreferrer' }
 
@@ -71,6 +71,12 @@ export default function PrivacyPage() {
                 Analytics to understand how visitors use the site: which pages are viewed, for how
                 long, the type of device and browser, approximate location (such as the city) and
                 how you found us. It uses cookies such as <code>_ga</code>.
+              </li>
+              <li>
+                It also records when the contact buttons are used (the forms, WhatsApp, email and
+                booking links), so we can see what brings us enquiries. Only the button name and,
+                for the project form, the service and budget range you picked are recorded. Your
+                name, email, phone number and message are never sent to Google Analytics.
               </li>
               <li>If you click <strong>Decline</strong>, Google Analytics does not run.</li>
               <li>

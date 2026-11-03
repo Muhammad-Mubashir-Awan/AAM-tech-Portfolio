@@ -58,9 +58,8 @@ export default function Navbar() {
     >
       {/* The full menu needs laptop width; phones and tablets get the slide-in menu */}
       <div className="wrap flex h-[72px] items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr]">
-        <Link to="/" aria-label={company.name} className="flex items-center gap-2.5 justify-self-start">
+        <Link to="/" aria-label={company.name} className="flex items-center justify-self-start py-2.5">
           <img className="h-[30px] w-auto" src={asset('logo-mark-light.png')} width={202} height={64} alt="" />
-          <span className="text-[0.85rem] font-semibold tracking-[0.32em] uppercase">Technology</span>
         </Link>
 
         <nav className="hidden items-center gap-8 text-[0.95rem] lg:flex">
@@ -69,6 +68,11 @@ export default function Navbar() {
 
         <Button asChild size="sm" className="hidden justify-self-end lg:inline-flex">
           <Link to="/contact">Contact Us</Link>
+        </Button>
+
+        {/* Phones and tablets: the main action stays in view beside the menu button */}
+        <Button asChild size="sm" className="mr-1 ml-auto min-h-11 lg:hidden">
+          <Link to="/contact">Contact</Link>
         </Button>
 
         {/* Phone and tablet menu: slides in from the right */}

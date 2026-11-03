@@ -19,7 +19,7 @@ export default function RecentProjects() {
             <p className="eyebrow">Selected work</p>
             <h2 className="mb-0">Recent projects</h2>
           </div>
-          <Link to="/work" className="group/link inline-flex gap-1.5 text-[0.95rem] font-semibold text-foreground">
+          <Link to="/work" className="group/link inline-flex items-center gap-1.5 text-[0.95rem] font-semibold text-foreground pointer-coarse:min-h-11">
             View full work portfolio <span aria-hidden="true" className={arrow}>→</span>
           </Link>
         </div>
@@ -47,11 +47,11 @@ export default function RecentProjects() {
                   <h3 className="mb-2.5">{p.title}</h3>
                   <p className="mb-5 line-clamp-3 text-[0.92rem]">{p.text}</p>
                   {isLive(p.link) ? (
-                    <a href={p.link} target="_blank" rel="noopener noreferrer" className={cn(mono, 'group/link mt-auto flex justify-between border-t border-border pt-4 text-[0.85rem] font-semibold text-pine-600')}>
+                    <a href={p.link} target="_blank" rel="noopener noreferrer" className={cn(mono, 'group/link mt-auto flex justify-between border-t border-border pt-4 pb-1.5 text-[0.85rem] font-semibold text-pine-600')}>
                       View project <span aria-hidden="true" className={arrow}>→</span>
                     </a>
                   ) : (
-                    <Link to="/work" className={cn(mono, 'group/link mt-auto flex justify-between border-t border-border pt-4 text-[0.85rem] font-semibold text-pine-600')}>
+                    <Link to="/work" className={cn(mono, 'group/link mt-auto flex justify-between border-t border-border pt-4 pb-1.5 text-[0.85rem] font-semibold text-pine-600')}>
                       See details <span aria-hidden="true" className={arrow}>→</span>
                     </Link>
                   )}

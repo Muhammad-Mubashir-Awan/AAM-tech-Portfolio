@@ -11,7 +11,10 @@ export default function Services({ detailed = false }) {
   return (
     <section className={detailed ? 'pt-10 pb-18 md:pb-25' : 'py-18 md:py-25'} id="services">
       <div className="wrap">
-        {!detailed && (
+        {detailed ? (
+          // The page title above is the h1; this keeps heading levels in order for screen readers
+          <h2 className="sr-only">All services</h2>
+        ) : (
           <SectionHeader
             eyebrow="What we do"
             title="Services built around your goals"
@@ -43,7 +46,7 @@ export default function Services({ detailed = false }) {
         </div>
         {!detailed && (
           <p className="mt-10 mb-0 text-center">
-            <Link to="/services" className="group/link inline-flex gap-1.5 text-[0.95rem] font-semibold text-foreground">
+            <Link to="/services" className="group/link inline-flex items-center gap-1.5 text-[0.95rem] font-semibold text-foreground pointer-coarse:min-h-11">
               See all services & how we work
               <span aria-hidden="true" className="transition-transform duration-200 group-hover/link:translate-x-1 motion-reduce:transition-none">→</span>
             </Link>

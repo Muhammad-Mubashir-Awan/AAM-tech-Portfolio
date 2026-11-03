@@ -14,12 +14,15 @@ export default function Pricing({ heading = true }) {
   return (
     <section className={cn('bg-background/60 pb-18 md:pb-25', heading ? 'pt-18 md:pt-25' : 'pt-10')} id="pricing">
       <div className="wrap">
-        {heading && (
+        {heading ? (
           <SectionHeader
             eyebrow="Pricing"
             title="Simple packages, honest prices"
             text="Every project is quoted for you, but here's where most of our work starts."
           />
+        ) : (
+          // The page title above is the h1; this keeps heading levels in order for screen readers
+          <h2 className="sr-only">Our packages</h2>
         )}
         <div className="grid items-stretch gap-6 lg:grid-cols-3">
           {pricing.map((p, i) => (

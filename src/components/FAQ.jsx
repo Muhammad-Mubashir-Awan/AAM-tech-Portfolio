@@ -16,11 +16,11 @@ export default function FAQ() {
           <h2>Questions we often get</h2>
           <p>
             Can't find your answer?{' '}
-            <button type="button" onClick={openProjectForm} className="cursor-pointer font-semibold text-pine-600 underline-offset-4 hover:underline">
+            <button type="button" onClick={openProjectForm} className="cursor-pointer font-semibold text-pine-600 underline-offset-4 hover:underline pointer-coarse:-my-3 pointer-coarse:inline-block pointer-coarse:py-3">
               Send us your question
             </button>{' '}
             or{' '}
-            <WhatsAppLink page="contact" className="font-semibold text-pine-600 underline-offset-4 hover:underline">
+            <WhatsAppLink page="contact" className="font-semibold text-pine-600 underline-offset-4 hover:underline pointer-coarse:-my-3 pointer-coarse:inline-block pointer-coarse:py-3">
               message us on WhatsApp
             </WhatsAppLink>
             .
